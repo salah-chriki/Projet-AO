@@ -34,6 +34,8 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").notNull(), // ST, SM, CE, SB, SOR, TP, ADMIN
+  division: varchar("division"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
+  department: varchar("department"), // DSI, DRHS, DF, DCSP, DSA, DPV, etc.
   isAdmin: boolean("is_admin").default(false),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -47,6 +49,8 @@ export const tenders = pgTable("tenders", {
   title: text("title").notNull(),
   description: text("description"),
   amount: decimal("amount", { precision: 15, scale: 2 }),
+  division: varchar("division"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
+  department: varchar("department"), // DSI, DRHS, DF, DCSP, DSA, DPV, etc.
   currentPhase: integer("current_phase").default(1), // 1=Preparation, 2=Execution, 3=Payment
   currentStep: integer("current_step").default(1),
   currentActorId: varchar("current_actor_id").references(() => users.id),
@@ -65,6 +69,8 @@ export const workflowSteps = pgTable("workflow_steps", {
   title: text("title").notNull(),
   description: text("description"),
   actorRole: varchar("actor_role").notNull(), // ST, SM, CE, SB, SOR, TP
+  estimatedDuration: integer("estimated_duration"), // in days
+  maxDuration: integer("max_duration"), // maximum allowed days
   isInternal: boolean("is_internal").default(false), // internal process vs requires actor action
 });
 
