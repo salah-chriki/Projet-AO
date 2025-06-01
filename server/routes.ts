@@ -236,7 +236,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         completedAt: new Date(),
       });
 
-      res.json({ message: "Tender rejected successfully" });
+      // Find previous step to send back for modifications
+      let previousStep = allSteps.find(s => 
+        s.phase === tender.currentPhase && s.stepNumber === (tender.currentStep || 1) - 1
+      );
+
+      // If no previous step in current phase, go to last step of previous phase
+      if (!previousStep && (tender.currentPhase || 1) > 1) {
+        const previousPhaseSteps = allSteps.filter(s => s.phase === (tender.currentPhase || 1) - 1);
+        previousStep = previousPhaseSteps[previousPhaseSteps.length - 1];
+      }
+
+      if (previousStep) {
+        // Get actor for previous step
+        const previousActors = await storage.getUsersByRole(previousStep.actorRole);
+        const previousActorId = previousActors[0]?.id;
+
+        // Move tender back to previous step
+        await storage.updateTenderStep(
+          tenderId,
+          previousStep.stepNumber,
+          previousActorId,
+          new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days deadline
+        );
+
+        // If moving to previous phase, update phase
+        if (previousStep.phase !== tender.currentPhase) {
+          await storage.updateTenderStep(tenderId, previousStep.stepNumber, previousActorId, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+        }
+      }
+
+      res.json({ message: "Tender rejected and sent back for modifications" });
     } catch (error) {
       console.error("Error rejecting tender:", error);
       res.status(500).json({ message: "Failed to reject tender" });

@@ -366,9 +366,15 @@ export default function TenderDetail() {
                     <h4 className="font-medium text-blue-900 mb-2">
                       {currentStep?.title}
                     </h4>
-                    <p className="text-blue-800 text-sm">
+                    <p className="text-blue-800 text-sm mb-3">
                       {currentStep?.description}
                     </p>
+                    <div className="bg-white rounded p-3 border border-blue-100">
+                      <p className="text-xs text-blue-700">
+                        <strong>Validation :</strong> L'appel d'offres passera automatiquement à l'étape suivante du processus.<br/>
+                        <strong>Modifications :</strong> L'appel d'offres retournera à l'étape précédente pour corrections.
+                      </p>
+                    </div>
                   </div>
                   
                   <Form {...approvalForm}>
@@ -416,16 +422,17 @@ export default function TenderDetail() {
                           className="bg-green-600 hover:bg-green-700"
                         >
                           <CheckCircle className="w-4 h-4 mr-2" />
-                          {approveMutation.isPending ? "Approbation..." : "Approuver"}
+                          {approveMutation.isPending ? "Validation en cours..." : "Valider et Passer à l'étape suivante"}
                         </Button>
                         <Button
                           type="button"
-                          variant="destructive"
+                          variant="outline"
                           onClick={approvalForm.handleSubmit(onReject)}
                           disabled={rejectMutation.isPending}
+                          className="border-orange-500 text-orange-600 hover:bg-orange-50"
                         >
                           <XCircle className="w-4 h-4 mr-2" />
-                          {rejectMutation.isPending ? "Rejet..." : "Rejeter"}
+                          {rejectMutation.isPending ? "Envoi en cours..." : "Demander des modifications"}
                         </Button>
                       </div>
                     </form>
