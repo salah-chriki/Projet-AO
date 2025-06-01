@@ -1,0 +1,211 @@
+# Les Trois Phases d'un Appel d'Offres
+
+## Phase 1: Préparation et Publication de l'Appel d'Offres
+
+### Étapes et Acteurs:
+
+1. **Envoi du DAO** - ST → SM
+   - Le Service Technique élabore le Dossier d'Appel d'Offres comprenant le cahier des charges techniques, les spécifications, les plans et le transmet au Service Marchés
+
+2. **Étude et Envoi au CE** - SM → CE  
+   - Le Service Marchés examine le dossier, vérifie la conformité administrative et juridique puis le transmet au Contrôle d'État pour validation
+
+3. **Revue par CE** - CE → SM
+   - Le Contrôle d'État examine le dossier pour s'assurer de la conformité réglementaire, budgétaire et procédurale
+
+4. **Transmission des remarques CE** - CE → ST
+   - Le Contrôle d'État formule ses observations et demandes de corrections techniques qu'il transmet au Service Technique
+
+5. **Satisfaction des remarques CE** - ST → SM
+   - Le Service Technique apporte les corrections et modifications demandées puis retourne le dossier corrigé au Service Marchés
+
+6. **Vérification et Envoi au CE** - SM → CE
+   - Le Service Marchés vérifie l'intégration des corrections et retransmet le dossier au Contrôle d'État pour validation finale
+
+7. **Validation par CE** - CE → SM
+   - Le Contrôle d'État donne son accord définitif et valide le dossier d'appel d'offres
+
+8. **Transmission à la commission d'AO** - SM → ST
+   - Le Service Marchés informe le Service Technique que le dossier est validé et peut être soumis à la commission d'appel d'offres
+
+9. **Signature du DAO** - Internal SM process
+   - Le Service Marchés fait signer le dossier d'appel d'offres par l'autorité compétente
+
+10. **Projet AO publié** - Internal SM process
+    - Publication de l'avis d'appel d'offres dans la presse spécialisée et sur les plateformes officielles
+
+11. **Ouverture des plis** - Internal SM process
+    - Réception et ouverture publique des offres des soumissionnaires à la date limite
+
+12. **Jugement Définitif** - Internal SM process
+    - Évaluation des offres par la commission, analyse technique et financière, et désignation de l'attributaire
+
+13. **Information de l'attributaire** - SM → CE
+    - Notification officielle au Contrôle d'État de l'identité de l'entreprise retenue
+
+14. **Établissement du Marché** - CE → ST
+    - Le Contrôle d'État demande au Service Technique d'établir le contrat définitif avec l'attributaire
+
+15. **Signature du Marché par la Direction Technique** - ST → SM
+    - La Direction Technique signe le marché et le retourne au Service Marchés
+
+16. **Remise du Marché au Prestataire** - SM → Prestataire
+    - Le Service Marchés remet officiellement le marché signé au prestataire retenu
+
+17. **Transmission du Marché pour Engagement** - SM → SB
+    - Le Service Marchés transmet le marché au Service Budgétaire pour engagement des crédits
+
+18. **Engagement du Marché** - SB → SM
+    - Le Service Budgétaire procède à l'engagement budgétaire et confirme la disponibilité des fonds
+
+19. **Approbation du Marché** - Internal SM process
+    - Le Service Marchés obtient l'approbation finale de l'autorité de tutelle
+
+20. **Visa du Marché** - Internal SM process
+    - Apposition du visa réglementaire sur le marché approuvé
+
+21. **Notification de l'approbation du marché au titulaire** - SM → CE
+    - Information officielle au Contrôle d'État de l'approbation définitive du marché
+
+22. **Dépôt de la caution définitive** - CE → SM
+    - Le Contrôle d'État confirme la réception de la garantie de bonne exécution du prestataire
+
+23. **Élaboration de l'Ordre de Service** - SM → CE
+    - Le Service Marchés prépare l'ordre de service de commencement des travaux
+
+**Acteurs principaux:** ST, SM, CE, Prestataire, SB
+
+---
+
+## Phase 2: Exécution et Contrôle des Prestations
+
+### Étapes et Acteurs:
+
+1. **Information de la notification OS** - SM → ST
+   - Le Service Marchés informe le Service Technique de l'émission de l'ordre de service pour démarrer les prestations
+
+2. **Demande de suspendre l'exécution des prestations** - ST → SM
+   - Le Service Technique demande l'arrêt temporaire des travaux en cas de problème technique ou de non-conformité
+
+3. **Transmission de l'Ordre d'arrêt** - SM → Prestataire
+   - Le Service Marchés notifie officiellement au prestataire l'ordre d'arrêt des prestations
+
+4. **Transmission de l'Ordre d'arrêt** - ST ← SM
+   - Le Service Marchés confirme au Service Technique que l'ordre d'arrêt a été transmis
+
+5. **Transmission de l'Ordre de reprise** - SM → Prestataire
+   - Une fois les problèmes résolus, le Service Marchés notifie l'ordre de reprise des travaux
+
+6. **Transmission de l'Ordre de reprise** - ST ← SM
+   - Le Service Marchés informe le Service Technique de la reprise effective des prestations
+
+7. **Désignation de commission de réception** - ST → SM
+   - Le Service Technique constitue et désigne la commission chargée de réceptionner les prestations
+
+8. **Réception des prestations** - ST → SM
+   - Le Service Technique procède à la réception des travaux et établit le procès-verbal de réception
+
+9. **Constatation des manquements** - SM → Prestataire
+   - Le Service Marchés notifie au prestataire les défauts et non-conformités constatés
+
+10. **Satisfaction des remarques** - Prestataire → SM
+    - Le prestataire corrige les défauts signalés et informe de la levée des réserves
+
+11. **Demande de Saisir le prestataire pour satisfaire les remarques** - SM → ST
+    - Le Service Marchés demande au Service Technique d'intervenir auprès du prestataire
+
+12. **Saisir le prestataire pour Constatation des manquements** - ST → Prestataire
+    - Le Service Technique contacte directement le prestataire pour les corrections
+
+13. **Élaboration de la lettre de Mise en Demeure** - Internal SM process
+    - Le Service Marchés rédige une mise en demeure formelle en cas de retard ou défaillance
+
+14. **Répondre à la lettre de Mise en Demeure** - Prestataire → SM
+    - Le prestataire répond à la mise en demeure et propose un planning de rattrapage
+
+15. **Demande de résiliation** - ST → SM
+    - Le Service Technique demande la résiliation du marché en cas de défaillance grave
+
+16. **Dépôt de Facture** - Prestataire → SM
+    - Le prestataire soumet ses factures pour les prestations réalisées
+
+17. **Établissement de la note de calcul / Décompte Provisoire** - SM → ST
+    - Le Service Marchés établit le décompte et demande vérification au Service Technique
+
+18. **Certification des Facture** - ST → SM
+    - Le Service Technique certifie la conformité des prestations facturées
+
+19. **Réception Définitive** - ST → SM
+    - Le Service Technique prononce la réception définitive après expiration du délai de garantie
+
+**Acteurs principaux:** ST, SM, Prestataire
+
+---
+
+## Phase 3: Traitement des Paiements
+
+### Étapes et Acteurs:
+
+1. **Transmission du Dossier de paiement** - SM → SOR
+   - Le Service Marchés transmet le dossier complet (factures, décomptes, certificats) au Service Ordonnancement
+
+2. **Examen du Dossier de paiement** - Internal SOR process
+   - Le Service Ordonnancement vérifie la conformité administrative et financière du dossier
+
+3. **Retour du Dossier de paiement** - SOR → SM
+   - Le Service Ordonnancement retourne le dossier au Service Marchés avec ses observations
+
+4. **Transmission des remarques SOR** - SOR → ST
+   - Le Service Ordonnancement transmet ses remarques techniques au Service Technique
+
+5. **Satisfaction des remarques SOR** - ST → SM
+   - Le Service Technique apporte les corrections demandées et retourne le dossier
+
+6. **Satisfaction des Rejets SOR** - SM → SOR
+   - Le Service Marchés corrige les points rejetés et retransmet le dossier
+
+7. **Vérification du Dossier de paiement** - Internal SOR process
+   - Le Service Ordonnancement procède à une vérification finale du dossier corrigé
+
+8. **Établissement OP/OV** - Internal SOR process
+   - Le Service Ordonnancement établit l'Ordre de Paiement ou l'Ordre de Virement
+
+9. **Transmission du Dossier de paiement** - SOR → TP
+   - Le Service Ordonnancement transmet le dossier complet au Trésorier Payeur
+
+10. **Rejet du Dossier de Paiement par le TP** - TP → SOR
+    - Le Trésorier Payeur rejette le dossier s'il constate des irrégularités
+
+11. **Retour du Dossier de paiement par le TP** - SOR → SM
+    - Le Service Ordonnancement retourne le dossier rejeté au Service Marchés
+
+12. **Transmission des remarques TP** - TP → ST
+    - Le Trésorier Payeur communique ses observations au Service Technique
+
+13. **Satisfaction des remarques TP** - ST → SM
+    - Le Service Technique apporte les corrections demandées par le Trésorier
+
+14. **Satisfaction des Rejets TP** - SM → SOR
+    - Le Service Marchés corrige les rejets et retransmet le dossier
+
+15. **Validation du Dossier de paiement** - Internal SOR process
+    - Le Service Ordonnancement valide définitivement le dossier de paiement
+
+16. **Signature du Dossier de Paiement par l'Ordonnateur** - SOR → TP
+    - L'Ordonnateur signe le dossier et l'autorise pour paiement
+
+17. **Signature du Dossier de Paiement par le TP** - TP → SOR
+    - Le Trésorier Payeur vise le dossier et procède au paiement effectif
+
+**Acteurs principaux:** ST, SM, SOR (Service Ordonnancement), TP (Trésorier Payeur)
+
+---
+
+## Légende des Acteurs:
+- **ST**: Service Technique
+- **SM**: Service Marchés  
+- **SB**: Service Budgétaire
+- **CE**: Contrôle d'État/Commission d'Évaluation
+- **SOR**: Service Ordonnancement
+- **TP**: Trésorier Payeur
+- **Prestataire**: Fournisseur/Contractant
