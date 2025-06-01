@@ -1,0 +1,375 @@
+import {
+  users,
+  tenders,
+  workflowSteps,
+  tenderStepHistory,
+  tenderComments,
+  type User,
+  type UpsertUser,
+  type Tender,
+  type WorkflowStep,
+  type TenderStepHistory,
+  type TenderComment,
+  type InsertTender,
+  type InsertWorkflowStep,
+  type InsertTenderStepHistory,
+  type InsertTenderComment,
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, and, desc, sql, asc } from "drizzle-orm";
+
+export interface IStorage {
+  // User operations (mandatory for Replit Auth)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  getUsersByRole(role: string): Promise<User[]>;
+  updateUserRole(userId: string, role: string, isAdmin?: boolean): Promise<User>;
+  deleteUser(userId: string): Promise<void>;
+  getAllUsers(): Promise<User[]>;
+
+  // Tender operations
+  createTender(tender: InsertTender): Promise<Tender>;
+  getTender(id: string): Promise<Tender | undefined>;
+  getTenderWithDetails(id: string): Promise<any>;
+  getAllTenders(): Promise<Tender[]>;
+  getTendersByActor(actorId: string): Promise<Tender[]>;
+  updateTenderStep(tenderId: string, stepNumber: number, actorId: string, deadline?: Date): Promise<Tender>;
+  updateTenderStatus(tenderId: string, status: string): Promise<Tender>;
+
+  // Workflow operations
+  getWorkflowSteps(): Promise<WorkflowStep[]>;
+  getWorkflowStepsByPhase(phase: number): Promise<WorkflowStep[]>;
+  initializeWorkflowSteps(): Promise<void>;
+
+  // Step history operations
+  createStepHistory(history: InsertTenderStepHistory): Promise<TenderStepHistory>;
+  getTenderStepHistory(tenderId: string): Promise<TenderStepHistory[]>;
+
+  // Comment operations
+  createComment(comment: InsertTenderComment): Promise<TenderComment>;
+  getTenderComments(tenderId: string): Promise<TenderComment[]>;
+
+  // Dashboard statistics
+  getDashboardStats(): Promise<any>;
+  getActorWorkload(): Promise<any>;
+}
+
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...userData,
+        role: userData.role || "ST",
+        isAdmin: userData.isAdmin || false,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  async getUsersByRole(role: string): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.role, role));
+  }
+
+  async updateUserRole(userId: string, role: string, isAdmin?: boolean): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ 
+        role, 
+        isAdmin: isAdmin ?? false,
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, userId));
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(users.role, users.firstName);
+  }
+
+  // Tender operations
+  async createTender(tender: InsertTender): Promise<Tender> {
+    const reference = `AO-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+    
+    const [newTender] = await db
+      .insert(tenders)
+      .values({
+        ...tender,
+        reference,
+        currentPhase: 1,
+        currentStep: 1,
+        status: "active",
+      })
+      .returning();
+
+    // Create initial step history entry
+    await this.createStepHistory({
+      tenderId: newTender.id,
+      stepId: 1,
+      actorId: tender.createdById!,
+      action: "created",
+      comments: "Appel d'offres créé",
+    });
+
+    return newTender;
+  }
+
+  async getTender(id: string): Promise<Tender | undefined> {
+    const [tender] = await db.select().from(tenders).where(eq(tenders.id, id));
+    return tender;
+  }
+
+  async getTenderWithDetails(id: string): Promise<any> {
+    const result = await db
+      .select({
+        tender: tenders,
+        currentActor: users,
+        createdBy: users,
+      })
+      .from(tenders)
+      .leftJoin(users, eq(tenders.currentActorId, users.id))
+      .where(eq(tenders.id, id));
+
+    return result[0];
+  }
+
+  async getAllTenders(): Promise<Tender[]> {
+    return await db.select().from(tenders).orderBy(desc(tenders.createdAt));
+  }
+
+  async getTendersByActor(actorId: string): Promise<Tender[]> {
+    return await db
+      .select()
+      .from(tenders)
+      .where(and(
+        eq(tenders.currentActorId, actorId),
+        eq(tenders.status, "active")
+      ))
+      .orderBy(tenders.deadline);
+  }
+
+  async updateTenderStep(tenderId: string, stepNumber: number, actorId: string, deadline?: Date): Promise<Tender> {
+    const [tender] = await db
+      .update(tenders)
+      .set({ 
+        currentStep: stepNumber,
+        currentActorId: actorId,
+        deadline,
+        updatedAt: new Date()
+      })
+      .where(eq(tenders.id, tenderId))
+      .returning();
+    return tender;
+  }
+
+  async updateTenderStatus(tenderId: string, status: string): Promise<Tender> {
+    const [tender] = await db
+      .update(tenders)
+      .set({ 
+        status,
+        updatedAt: new Date()
+      })
+      .where(eq(tenders.id, tenderId))
+      .returning();
+    return tender;
+  }
+
+  // Workflow operations
+  async getWorkflowSteps(): Promise<WorkflowStep[]> {
+    return await db.select().from(workflowSteps).orderBy(workflowSteps.phase, workflowSteps.stepNumber);
+  }
+
+  async getWorkflowStepsByPhase(phase: number): Promise<WorkflowStep[]> {
+    return await db
+      .select()
+      .from(workflowSteps)
+      .where(eq(workflowSteps.phase, phase))
+      .orderBy(workflowSteps.stepNumber);
+  }
+
+  async initializeWorkflowSteps(): Promise<void> {
+    // Check if steps already exist
+    const existingSteps = await db.select().from(workflowSteps).limit(1);
+    if (existingSteps.length > 0) return;
+
+    // Phase 1: Preparation steps (from the document)
+    const phase1Steps = [
+      { phase: 1, stepNumber: 1, title: "Envoi du DAO", description: "ST → SM: Élaboration du Dossier d'Appel d'Offres", actorRole: "SM", isInternal: false },
+      { phase: 1, stepNumber: 2, title: "Étude et Envoi au CE", description: "SM → CE: Examen du dossier et vérification de conformité", actorRole: "CE", isInternal: false },
+      { phase: 1, stepNumber: 3, title: "Revue par CE", description: "CE: Examen de conformité réglementaire", actorRole: "CE", isInternal: true },
+      { phase: 1, stepNumber: 4, title: "Transmission des remarques CE", description: "CE → ST: Formulation des observations", actorRole: "ST", isInternal: false },
+      { phase: 1, stepNumber: 5, title: "Satisfaction des remarques CE", description: "ST → SM: Corrections et modifications", actorRole: "SM", isInternal: false },
+      { phase: 1, stepNumber: 6, title: "Vérification et Envoi au CE", description: "SM → CE: Vérification des corrections", actorRole: "CE", isInternal: false },
+      { phase: 1, stepNumber: 7, title: "Validation par CE", description: "CE → SM: Accord définitif", actorRole: "SM", isInternal: false },
+      { phase: 1, stepNumber: 8, title: "Transmission à la commission d'AO", description: "SM → ST: Information de validation", actorRole: "ST", isInternal: false },
+      { phase: 1, stepNumber: 9, title: "Signature du DAO", description: "SM: Signature par l'autorité compétente", actorRole: "SM", isInternal: true },
+      { phase: 1, stepNumber: 10, title: "Projet AO publié", description: "SM: Publication de l'avis", actorRole: "SM", isInternal: true },
+      { phase: 1, stepNumber: 11, title: "Ouverture des plis", description: "SM: Réception et ouverture des offres", actorRole: "SM", isInternal: true },
+      { phase: 1, stepNumber: 12, title: "Jugement Définitif", description: "SM: Évaluation et désignation de l'attributaire", actorRole: "SM", isInternal: true },
+      { phase: 1, stepNumber: 13, title: "Information de l'attributaire", description: "SM → CE: Notification de l'entreprise retenue", actorRole: "CE", isInternal: false },
+      { phase: 1, stepNumber: 14, title: "Établissement du Marché", description: "CE → ST: Demande d'établissement du contrat", actorRole: "ST", isInternal: false },
+      { phase: 1, stepNumber: 15, title: "Signature du Marché par la Direction Technique", description: "ST → SM: Signature et retour", actorRole: "SM", isInternal: false },
+      { phase: 1, stepNumber: 16, title: "Remise du Marché au Prestataire", description: "SM: Remise officielle du marché", actorRole: "SM", isInternal: true },
+      { phase: 1, stepNumber: 17, title: "Transmission du Marché pour Engagement", description: "SM → SB: Transmission pour engagement", actorRole: "SB", isInternal: false },
+      { phase: 1, stepNumber: 18, title: "Engagement du Marché", description: "SB → SM: Engagement budgétaire", actorRole: "SM", isInternal: false },
+      { phase: 1, stepNumber: 19, title: "Approbation du Marché", description: "SM: Approbation finale", actorRole: "SM", isInternal: true },
+      { phase: 1, stepNumber: 20, title: "Visa du Marché", description: "SM: Apposition du visa", actorRole: "SM", isInternal: true },
+      { phase: 1, stepNumber: 21, title: "Notification de l'approbation du marché au titulaire", description: "SM → CE: Information d'approbation", actorRole: "CE", isInternal: false },
+      { phase: 1, stepNumber: 22, title: "Dépôt de la caution définitive", description: "CE → SM: Confirmation de garantie", actorRole: "SM", isInternal: false },
+      { phase: 1, stepNumber: 23, title: "Élaboration de l'Ordre de Service", description: "SM → CE: Préparation ordre de commencement", actorRole: "CE", isInternal: false },
+    ];
+
+    // Phase 2: Execution steps
+    const phase2Steps = [
+      { phase: 2, stepNumber: 1, title: "Information de la notification OS", description: "SM → ST: Information émission ordre de service", actorRole: "ST", isInternal: false },
+      { phase: 2, stepNumber: 2, title: "Demande de suspendre l'exécution des prestations", description: "ST → SM: Demande d'arrêt temporaire", actorRole: "SM", isInternal: false },
+      { phase: 2, stepNumber: 3, title: "Transmission de l'Ordre d'arrêt", description: "SM: Notification d'arrêt au prestataire", actorRole: "SM", isInternal: true },
+      { phase: 2, stepNumber: 4, title: "Confirmation de l'Ordre d'arrêt", description: "SM → ST: Confirmation transmission", actorRole: "ST", isInternal: false },
+      { phase: 2, stepNumber: 5, title: "Transmission de l'Ordre de reprise", description: "SM: Notification reprise au prestataire", actorRole: "SM", isInternal: true },
+      { phase: 2, stepNumber: 6, title: "Confirmation de l'Ordre de reprise", description: "SM → ST: Information reprise", actorRole: "ST", isInternal: false },
+      { phase: 2, stepNumber: 7, title: "Désignation de commission de réception", description: "ST → SM: Constitution commission", actorRole: "SM", isInternal: false },
+      { phase: 2, stepNumber: 8, title: "Réception des prestations", description: "ST → SM: Réception et PV", actorRole: "SM", isInternal: false },
+      { phase: 2, stepNumber: 9, title: "Constatation des manquements", description: "SM: Notification défauts au prestataire", actorRole: "SM", isInternal: true },
+      { phase: 2, stepNumber: 10, title: "Satisfaction des remarques", description: "Prestataire → SM: Corrections", actorRole: "SM", isInternal: false },
+      { phase: 2, stepNumber: 11, title: "Demande de Saisir le prestataire pour satisfaire les remarques", description: "SM → ST: Demande intervention", actorRole: "ST", isInternal: false },
+      { phase: 2, stepNumber: 12, title: "Saisir le prestataire pour Constatation des manquements", description: "ST: Contact prestataire", actorRole: "ST", isInternal: true },
+      { phase: 2, stepNumber: 13, title: "Élaboration de la lettre de Mise en Demeure", description: "SM: Rédaction mise en demeure", actorRole: "SM", isInternal: true },
+      { phase: 2, stepNumber: 14, title: "Répondre à la lettre de Mise en Demeure", description: "Prestataire → SM: Réponse planning", actorRole: "SM", isInternal: false },
+      { phase: 2, stepNumber: 15, title: "Demande de résiliation", description: "ST → SM: Demande résiliation", actorRole: "SM", isInternal: false },
+      { phase: 2, stepNumber: 16, title: "Dépôt de Facture", description: "Prestataire → SM: Soumission factures", actorRole: "SM", isInternal: false },
+      { phase: 2, stepNumber: 17, title: "Établissement de la note de calcul / Décompte Provisoire", description: "SM → ST: Décompte et vérification", actorRole: "ST", isInternal: false },
+      { phase: 2, stepNumber: 18, title: "Certification des Facture", description: "ST → SM: Certification conformité", actorRole: "SM", isInternal: false },
+      { phase: 2, stepNumber: 19, title: "Réception Définitive", description: "ST → SM: Réception définitive", actorRole: "SM", isInternal: false },
+    ];
+
+    // Phase 3: Payment steps
+    const phase3Steps = [
+      { phase: 3, stepNumber: 1, title: "Transmission du Dossier de paiement", description: "SM → SOR: Transmission dossier complet", actorRole: "SOR", isInternal: false },
+      { phase: 3, stepNumber: 2, title: "Examen du Dossier de paiement", description: "SOR: Vérification conformité", actorRole: "SOR", isInternal: true },
+      { phase: 3, stepNumber: 3, title: "Retour du Dossier de paiement", description: "SOR → SM: Retour avec observations", actorRole: "SM", isInternal: false },
+      { phase: 3, stepNumber: 4, title: "Transmission des remarques SOR", description: "SOR → ST: Remarques techniques", actorRole: "ST", isInternal: false },
+      { phase: 3, stepNumber: 5, title: "Satisfaction des remarques SOR", description: "ST → SM: Corrections", actorRole: "SM", isInternal: false },
+      { phase: 3, stepNumber: 6, title: "Satisfaction des Rejets SOR", description: "SM → SOR: Correction rejets", actorRole: "SOR", isInternal: false },
+      { phase: 3, stepNumber: 7, title: "Vérification du Dossier de paiement", description: "SOR: Vérification finale", actorRole: "SOR", isInternal: true },
+      { phase: 3, stepNumber: 8, title: "Établissement OP/OV", description: "SOR: Ordre de Paiement/Virement", actorRole: "SOR", isInternal: true },
+      { phase: 3, stepNumber: 9, title: "Transmission du Dossier de paiement", description: "SOR → TP: Transmission au Trésorier", actorRole: "TP", isInternal: false },
+      { phase: 3, stepNumber: 10, title: "Rejet du Dossier de Paiement par le TP", description: "TP → SOR: Rejet si irrégularités", actorRole: "SOR", isInternal: false },
+      { phase: 3, stepNumber: 11, title: "Retour du Dossier de paiement par le TP", description: "SOR → SM: Retour dossier rejeté", actorRole: "SM", isInternal: false },
+      { phase: 3, stepNumber: 12, title: "Transmission des remarques TP", description: "TP → ST: Observations", actorRole: "ST", isInternal: false },
+      { phase: 3, stepNumber: 13, title: "Satisfaction des remarques TP", description: "ST → SM: Corrections Trésorier", actorRole: "SM", isInternal: false },
+      { phase: 3, stepNumber: 14, title: "Satisfaction des Rejets TP", description: "SM → SOR: Correction rejets", actorRole: "SOR", isInternal: false },
+      { phase: 3, stepNumber: 15, title: "Validation du Dossier de paiement", description: "SOR: Validation définitive", actorRole: "SOR", isInternal: true },
+      { phase: 3, stepNumber: 16, title: "Signature du Dossier de Paiement par l'Ordonnateur", description: "SOR → TP: Signature autorisation", actorRole: "TP", isInternal: false },
+      { phase: 3, stepNumber: 17, title: "Signature du Dossier de Paiement par le TP", description: "TP: Visa et paiement effectif", actorRole: "TP", isInternal: true },
+    ];
+
+    // Insert all steps
+    const allSteps = [...phase1Steps, ...phase2Steps, ...phase3Steps];
+    await db.insert(workflowSteps).values(allSteps);
+  }
+
+  // Step history operations
+  async createStepHistory(history: InsertTenderStepHistory): Promise<TenderStepHistory> {
+    const [stepHistory] = await db
+      .insert(tenderStepHistory)
+      .values(history)
+      .returning();
+    return stepHistory;
+  }
+
+  async getTenderStepHistory(tenderId: string): Promise<TenderStepHistory[]> {
+    return await db
+      .select()
+      .from(tenderStepHistory)
+      .where(eq(tenderStepHistory.tenderId, tenderId))
+      .orderBy(desc(tenderStepHistory.createdAt));
+  }
+
+  // Comment operations
+  async createComment(comment: InsertTenderComment): Promise<TenderComment> {
+    const [tenderComment] = await db
+      .insert(tenderComments)
+      .values(comment)
+      .returning();
+    return tenderComment;
+  }
+
+  async getTenderComments(tenderId: string): Promise<TenderComment[]> {
+    return await db
+      .select()
+      .from(tenderComments)
+      .where(eq(tenderComments.tenderId, tenderId))
+      .orderBy(desc(tenderComments.createdAt));
+  }
+
+  // Dashboard statistics
+  async getDashboardStats(): Promise<any> {
+    const totalTenders = await db
+      .select({ count: sql`count(*)` })
+      .from(tenders);
+
+    const completedTenders = await db
+      .select({ count: sql`count(*)` })
+      .from(tenders)
+      .where(eq(tenders.status, "completed"));
+
+    const activeTenders = await db
+      .select({ count: sql`count(*)` })
+      .from(tenders)
+      .where(eq(tenders.status, "active"));
+
+    const totalBudget = await db
+      .select({ sum: sql`sum(amount)` })
+      .from(tenders);
+
+    const phaseDistribution = await db
+      .select({
+        phase: tenders.currentPhase,
+        count: sql`count(*)`
+      })
+      .from(tenders)
+      .where(eq(tenders.status, "active"))
+      .groupBy(tenders.currentPhase);
+
+    return {
+      totalTenders: totalTenders[0]?.count || 0,
+      completedTenders: completedTenders[0]?.count || 0,
+      activeTenders: activeTenders[0]?.count || 0,
+      totalBudget: totalBudget[0]?.sum || 0,
+      phaseDistribution,
+    };
+  }
+
+  async getActorWorkload(): Promise<any> {
+    return await db
+      .select({
+        role: users.role,
+        count: sql`count(*)`
+      })
+      .from(tenders)
+      .leftJoin(users, eq(tenders.currentActorId, users.id))
+      .where(eq(tenders.status, "active"))
+      .groupBy(users.role);
+  }
+}
+
+export const storage = new DatabaseStorage();
