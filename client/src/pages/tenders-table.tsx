@@ -55,8 +55,8 @@ export default function TendersTable() {
   };
 
   const getPhaseStats = () => {
-    const stats = { all: tenders?.length || 0, "1": 0, "2": 0, "3": 0 };
-    tenders?.forEach((tender: any) => {
+    const stats = { all: (tenders || []).length, "1": 0, "2": 0, "3": 0 };
+    (tenders || []).forEach((tender: any) => {
       stats[tender.currentPhase as keyof typeof stats]++;
     });
     return stats;
