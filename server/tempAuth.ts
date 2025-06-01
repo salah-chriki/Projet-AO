@@ -72,14 +72,39 @@ export async function setupTempAuth(app: Express) {
             <p>Contrôle d'État - Validation réglementaire</p>
           </div>
           
+          <div class="user-card" onclick="login('sb1')">
+            <strong>Marc Budget</strong> <span class="role-badge" style="background: #f59e0b">SB</span>
+            <p>Service Budget - Gestion budgétaire</p>
+          </div>
+          
+          <div class="user-card" onclick="login('sor1')">
+            <strong>Lucie Ordonnancement</strong> <span class="role-badge" style="background: #8b5cf6">SOR</span>
+            <p>Service Ordonnancement - Gestion des paiements</p>
+          </div>
+          
+          <div class="user-card" onclick="login('tp1')">
+            <strong>Paul Trésorier</strong> <span class="role-badge" style="background: #10b981">TP</span>
+            <p>Trésorier Public - Validation finale des paiements</p>
+          </div>
+          
           <script>
             function login(userId) {
               fetch('/api/temp-login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId })
-              }).then(() => {
-                window.location.href = '/';
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  window.location.href = '/';
+                } else {
+                  alert('Login failed: ' + (data.error || 'Unknown error'));
+                }
+              })
+              .catch(error => {
+                console.error('Login error:', error);
+                alert('Login failed: ' + error.message);
               });
             }
           </script>
@@ -90,15 +115,25 @@ export async function setupTempAuth(app: Express) {
 
   // Temporary login handler
   app.post("/api/temp-login", async (req: any, res) => {
-    const { userId } = req.body;
-    const user = await storage.getUser(userId);
-    
-    if (user) {
-      req.session.userId = userId;
-      req.session.user = user;
-      res.json({ success: true });
-    } else {
-      res.status(404).json({ error: "User not found" });
+    try {
+      const { userId } = req.body;
+      console.log(`Login attempt for user: ${userId}`);
+      
+      const user = await storage.getUser(userId);
+      console.log(`User found:`, user ? `${user.firstName} ${user.lastName} (${user.role})` : 'null');
+      
+      if (user) {
+        req.session.userId = userId;
+        req.session.user = user;
+        console.log(`Login successful for ${user.firstName} ${user.lastName}`);
+        res.json({ success: true });
+      } else {
+        console.log(`User not found: ${userId}`);
+        res.status(404).json({ error: "User not found" });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
