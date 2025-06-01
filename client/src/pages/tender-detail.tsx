@@ -582,6 +582,9 @@ export default function TenderDetail() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Timeline */}
+            <TenderTimeline tenderId={tenderId} />
           </div>
         </div>
       </div>
