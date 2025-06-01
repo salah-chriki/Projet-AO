@@ -112,6 +112,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           stepTitle: step?.title || 'Étape inconnue',
           stepDescription: step?.description || '',
           actorRole: step?.actorRole || '',
+          estimatedDuration: step?.estimatedDuration || null,
+          maxDuration: step?.maxDuration || null,
         };
       }).sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
       

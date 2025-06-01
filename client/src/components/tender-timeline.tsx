@@ -125,6 +125,15 @@ export default function TenderTimeline({ tenderId }: TenderTimelineProps) {
                         <p className="text-sm text-slate-600 mb-2">
                           {entry.stepDescription}
                         </p>
+                        {entry.estimatedDuration && (
+                          <div className="flex items-center text-xs text-slate-500 mb-2">
+                            <Clock className="w-3 h-3 mr-1" />
+                            <span>
+                              Durée estimée: {entry.estimatedDuration} jours
+                              {entry.maxDuration && ` (max: ${entry.maxDuration} jours)`}
+                            </span>
+                          </div>
+                        )}
                         {entry.comments && (
                           <p className="text-sm italic text-slate-500 mb-2">
                             "{entry.comments}"
