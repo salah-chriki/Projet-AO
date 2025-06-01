@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -9,9 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, Eye, Calendar, DollarSign } from "lucide-react";
 import CreateTenderDialog from "@/components/create-tender-dialog";
-import TenderCard from "@/components/tender-card";
+import PhaseBadge from "@/components/phase-badge";
+import ActorBadge from "@/components/actor-badge";
+import { useLocation } from "wouter";
+import { ACTOR_ROLES } from "@/lib/constants";
 
 export default function Tenders() {
   const [searchQuery, setSearchQuery] = useState("");

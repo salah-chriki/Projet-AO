@@ -8,7 +8,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import ActorDashboard from "@/pages/actor-dashboard";
-import Tenders from "@/pages/tenders";
+import TendersTable from "@/pages/tenders-table";
 import TenderDetail from "@/pages/tender-detail";
 import Actors from "@/pages/actors";
 import Sidebar from "@/components/sidebar";
@@ -65,7 +65,7 @@ function Router() {
               <div className="flex h-screen bg-slate-50">
                 <Sidebar />
                 <div className="flex-1 overflow-hidden">
-                  <Tenders />
+                  <TendersTable />
                 </div>
               </div>
             )}
