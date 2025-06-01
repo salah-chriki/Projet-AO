@@ -98,16 +98,26 @@ export async function seedExampleTenders() {
       const tender = await storage.createTender(tenderData as any);
       console.log(`Created tender: ${tender.reference}`);
       
-      // Set some tenders to different phases and steps for demonstration
-      if (tender.reference.includes("001") || tender.reference.includes("002")) {
-        // Move to phase 2 (execution)
-        await storage.updateTenderStep(tender.id, 5, "sm1", new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+      // Set different tenders to various workflow steps for demonstration
+      const referenceNumber = tender.reference.split('-')[2];
+      
+      if (referenceNumber.endsWith('1') || referenceNumber.endsWith('2')) {
+        // ST needs to take action - Step 4: Transmission des remarques CE
+        await storage.updateTenderStep(tender.id, 4, "st1", new Date(Date.now() + 3 * 24 * 60 * 60 * 1000));
+        await storage.createStepHistory({
+          tenderId: tender.id,
+          stepId: 1,
+          actorId: "sm1",
+          action: "approved",
+          comments: "Dossier d'appel d'offres élaboré",
+          completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        });
         await storage.createStepHistory({
           tenderId: tender.id,
           stepId: 2,
-          actorId: "st1",
+          actorId: "ce1",
           action: "approved",
-          comments: "Dossier technique validé",
+          comments: "Examen de conformité effectué",
           completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
         });
         await storage.createStepHistory({
@@ -115,35 +125,70 @@ export async function seedExampleTenders() {
           stepId: 3,
           actorId: "ce1",
           action: "approved",
-          comments: "Conformité réglementaire validée",
-          completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-        });
-      }
-      
-      if (tender.reference.includes("003")) {
-        // Move to phase 3 (payment)
-        await storage.updateTenderStep(tender.id, 2, "sor1", new Date(Date.now() + 5 * 24 * 60 * 60 * 1000));
-        await storage.createStepHistory({
-          tenderId: tender.id,
-          stepId: 15,
-          actorId: "st1",
-          action: "approved",
-          comments: "Travaux réceptionnés conformément au cahier des charges",
+          comments: "Remarques formulées",
           completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         });
       }
       
-      if (tender.reference.includes("004")) {
-        // Keep in phase 1 but advance steps
-        await storage.updateTenderStep(tender.id, 8, "st1", new Date(Date.now() + 3 * 24 * 60 * 60 * 1000));
+      if (referenceNumber.endsWith('3') || referenceNumber.endsWith('4')) {
+        // CE needs to take action - Step 2: Étude et Envoi au CE
+        await storage.updateTenderStep(tender.id, 2, "ce1", new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
         await storage.createStepHistory({
           tenderId: tender.id,
-          stepId: 6,
-          actorId: "ce1",
+          stepId: 1,
+          actorId: "sm1",
           action: "approved",
-          comments: "Corrections apportées selon remarques",
-          completedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+          comments: "Dossier transmis pour examen",
+          completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         });
+      }
+      
+      if (referenceNumber.endsWith('5') || referenceNumber.endsWith('6')) {
+        // SB needs to take action - Step 18: Engagement du Marché
+        await storage.updateTenderStep(tender.id, 18, "sb1", new Date(Date.now() + 2 * 24 * 60 * 60 * 1000));
+        // Add previous steps as completed
+        for (let i = 1; i <= 17; i++) {
+          await storage.createStepHistory({
+            tenderId: tender.id,
+            stepId: i,
+            actorId: i <= 10 ? "sm1" : "st1",
+            action: "approved",
+            comments: `Étape ${i} complétée`,
+            completedAt: new Date(Date.now() - (18 - i) * 24 * 60 * 60 * 1000),
+          });
+        }
+      }
+      
+      if (referenceNumber.endsWith('7') || referenceNumber.endsWith('8')) {
+        // SOR needs to take action - Step 20: Notification du Marché
+        await storage.updateTenderStep(tender.id, 20, "sor1", new Date(Date.now() + 5 * 24 * 60 * 60 * 1000));
+        // Add previous steps as completed
+        for (let i = 1; i <= 19; i++) {
+          await storage.createStepHistory({
+            tenderId: tender.id,
+            stepId: i,
+            actorId: i <= 10 ? "sm1" : (i <= 18 ? "st1" : "sb1"),
+            action: "approved",
+            comments: `Étape ${i} complétée`,
+            completedAt: new Date(Date.now() - (20 - i) * 24 * 60 * 60 * 1000),
+          });
+        }
+      }
+      
+      if (referenceNumber.endsWith('9') || referenceNumber.endsWith('0')) {
+        // TP needs to take action - Step 25: Validation Finale du Paiement
+        await storage.updateTenderStep(tender.id, 25, "tp1", new Date(Date.now() + 3 * 24 * 60 * 60 * 1000));
+        // Add all previous steps as completed
+        for (let i = 1; i <= 24; i++) {
+          await storage.createStepHistory({
+            tenderId: tender.id,
+            stepId: i,
+            actorId: i <= 10 ? "sm1" : (i <= 18 ? "st1" : (i <= 22 ? "sor1" : "sb1")),
+            action: "approved",
+            comments: `Étape ${i} complétée`,
+            completedAt: new Date(Date.now() - (25 - i) * 24 * 60 * 60 * 1000),
+          });
+        }
       }
       
     } catch (error) {
