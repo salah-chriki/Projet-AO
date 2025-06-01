@@ -15,6 +15,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import ActorBadge from "@/components/actor-badge";
 import PhaseBadge from "@/components/phase-badge";
+import TenderTimeline from "@/components/tender-timeline";
 import { ACTOR_ROLES } from "@/lib/constants";
 import {
   Form,

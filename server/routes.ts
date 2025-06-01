@@ -16,6 +16,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Initialize workflow steps
   await storage.initializeWorkflowSteps();
+  
+  // Seed example data
+  const { seedExampleTenders } = await import("./seedData");
+  await seedExampleTenders();
 
   // Auth routes
   app.get('/api/auth/user', isTempAuthenticated, async (req: any, res) => {
@@ -73,6 +77,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching tender:", error);
       res.status(500).json({ message: "Failed to fetch tender" });
+    }
+  });
+
+  // Get tender timeline
+  app.get('/api/tenders/:id/timeline', isTempAuthenticated, async (req, res) => {
+    try {
+      const history = await storage.getTenderStepHistory(req.params.id);
+      const steps = await storage.getWorkflowSteps();
+      
+      // Create timeline with step details
+      const timeline = history.map(entry => {
+        const step = steps.find(s => s.id === entry.stepId);
+        return {
+          ...entry,
+          stepTitle: step?.title || 'Étape inconnue',
+          stepDescription: step?.description || '',
+          actorRole: step?.actorRole || '',
+        };
+      }).sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
+      
+      res.json(timeline);
+    } catch (error) {
+      console.error("Error fetching tender timeline:", error);
+      res.status(500).json({ message: "Failed to fetch timeline" });
     }
   });
 
