@@ -9,6 +9,7 @@ import Landing from "@/pages/landing";
 import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import ActorDashboard from "@/pages/actor-dashboard";
+import AdminDashboard from "@/pages/admin-dashboard";
 import TendersTable from "@/pages/tenders-table";
 import TenderDetail from "@/pages/tender-detail";
 import MyTaskTenderDetail from "@/pages/myTask-tender-detail";
@@ -65,6 +66,16 @@ function Router() {
                 <Sidebar />
                 <div className="flex-1 overflow-hidden">
                   <Dashboard />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/admin">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <AdminDashboard />
                 </div>
               </div>
             )}

@@ -79,6 +79,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/dashboard/chart-data', isAuthenticated, async (req, res) => {
+    try {
+      const chartData = await storage.getChartData();
+      res.json(chartData);
+    } catch (error) {
+      console.error("Error fetching chart data:", error);
+      res.status(500).json({ message: "Failed to fetch chart data" });
+    }
+  });
+
   // Tender routes
   app.get('/api/tenders', isAuthenticated, async (req, res) => {
     try {

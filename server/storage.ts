@@ -65,6 +65,7 @@ export interface IStorage {
   // Dashboard statistics
   getDashboardStats(): Promise<any>;
   getActorWorkload(): Promise<any>;
+  getChartData(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -447,11 +448,16 @@ export class DatabaseStorage implements IStorage {
       .where(eq(tenders.status, "active"))
       .groupBy(tenders.currentPhase);
 
+    const totalDirections = await db
+      .select({ count: sql`count(distinct direction)` })
+      .from(tenders);
+
     return {
       totalTenders: totalTenders[0]?.count || 0,
       completedTenders: completedTenders[0]?.count || 0,
       activeTenders: activeTenders[0]?.count || 0,
       totalBudget: totalBudget[0]?.sum || 0,
+      totalDirections: totalDirections[0]?.count || 0,
       phaseDistribution,
     };
   }
@@ -466,6 +472,48 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(users, eq(tenders.currentActorId, users.id))
       .where(eq(tenders.status, "active"))
       .groupBy(users.role);
+  }
+
+  async getChartData(): Promise<any> {
+    // Récupérer les données par direction avec les statuts
+    const tendersByDirection = await db
+      .select({
+        direction: tenders.direction,
+        status: tenders.status,
+        phase: tenders.currentPhase,
+        count: sql`count(*)`
+      })
+      .from(tenders)
+      .groupBy(tenders.direction, tenders.status, tenders.currentPhase);
+
+    // Organiser les données pour le graphique
+    const directions = ['DAF', 'DHAU', 'DGAF', 'DIL', 'DPAU', 'DEC', 'DGOM'];
+    const chartData = directions.map(direction => {
+      const directionData = tendersByDirection.filter(item => item.direction === direction);
+      
+      const result: any = {
+        direction,
+        total: directionData.reduce((sum, item) => sum + Number(item.count), 0),
+        active: directionData.filter(item => item.status === 'active').reduce((sum, item) => sum + Number(item.count), 0),
+        completed: directionData.filter(item => item.status === 'completed').reduce((sum, item) => sum + Number(item.count), 0),
+      };
+
+      // Ajouter les différents statuts pour le graphique empilé
+      result["OS Notifié"] = directionData.filter(item => item.status === 'completed').reduce((sum, item) => sum + Number(item.count), 0);
+      result["OS en cours d'élaboration"] = directionData.filter(item => item.status === 'active' && item.phase === 1).reduce((sum, item) => sum + Number(item.count), 0);
+      result["Notification en cours"] = directionData.filter(item => item.status === 'active' && item.phase === 2).reduce((sum, item) => sum + Number(item.count), 0);
+      result["Visa en cours"] = directionData.filter(item => item.status === 'active' && item.phase === 3).reduce((sum, item) => sum + Number(item.count), 0);
+      result["Approbation en cours"] = 0; // Calculé selon la logique métier
+      result["Séance AO en cours"] = 0;
+      result["Phase de soumission"] = 0;
+      result["Non Encore Publié"] = 0;
+      result["En cours de Vérification par le SM"] = 0;
+      result["DAO Non Encore Reçu"] = 0;
+
+      return result;
+    });
+
+    return chartData;
   }
 }
 
