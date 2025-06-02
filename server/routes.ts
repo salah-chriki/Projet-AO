@@ -90,18 +90,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Role-based task filtering
-      let tasks;
-      if (user.role === 'ST') {
-        // ST: only show tenders where they need to take action
-        tasks = await storage.getTendersByActor(userId);
-      } else if (user.role === 'SM') {
-        // SM: can view all tenders
-        tasks = await storage.getAllTenders();
-      } else {
-        // Other roles: show their assigned tasks
-        tasks = await storage.getTendersByActor(userId);
-      }
+      // Only show tenders where the current user is the assigned actor
+      const tasks = await storage.getTendersByActor(userId);
       
       res.json(tasks);
     } catch (error) {
