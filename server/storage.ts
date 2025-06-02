@@ -167,15 +167,21 @@ export class DatabaseStorage implements IStorage {
       .orderBy(tenders.deadline);
   }
 
-  async updateTenderStep(tenderId: string, stepNumber: number, actorId: string, deadline?: Date): Promise<Tender> {
+  async updateTenderStep(tenderId: string, stepNumber: number, actorId: string, deadline?: Date, phase?: number): Promise<Tender> {
+    const updateData: any = { 
+      currentStep: stepNumber,
+      currentActorId: actorId,
+      deadline,
+      updatedAt: new Date()
+    };
+    
+    if (phase) {
+      updateData.currentPhase = phase;
+    }
+
     const [tender] = await db
       .update(tenders)
-      .set({ 
-        currentStep: stepNumber,
-        currentActorId: actorId,
-        deadline,
-        updatedAt: new Date()
-      })
+      .set(updateData)
       .where(eq(tenders.id, tenderId))
       .returning();
     return tender;

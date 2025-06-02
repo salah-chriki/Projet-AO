@@ -184,18 +184,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const nextActors = await storage.getUsersByRole(nextStep.actorRole);
         const nextActorId = nextActors[0]?.id;
 
-        // Update tender to next step
+        // Update tender to next step with proper phase handling
         await storage.updateTenderStep(
           tenderId,
           nextStep.stepNumber,
           nextActorId,
-          deadline ? new Date(deadline) : undefined
+          deadline ? new Date(deadline) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          nextStep.phase !== tender.currentPhase ? nextStep.phase : undefined
         );
 
-        // If moving to new phase, update phase
-        if (nextStep.phase !== tender.currentPhase) {
-          await storage.updateTenderStep(tenderId, nextStep.stepNumber, nextActorId, deadline ? new Date(deadline) : undefined);
-        }
+        console.log(`Tender ${tenderId} moved to step ${nextStep.stepNumber} (${nextStep.title}) assigned to ${nextActorId}`);
       } else {
         // Tender completed
         await storage.updateTenderStatus(tenderId, "completed");
@@ -252,18 +250,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const previousActors = await storage.getUsersByRole(previousStep.actorRole);
         const previousActorId = previousActors[0]?.id;
 
-        // Move tender back to previous step
+        // Move tender back to previous step with proper phase handling
         await storage.updateTenderStep(
           tenderId,
           previousStep.stepNumber,
           previousActorId,
-          new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days deadline
+          new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days deadline
+          previousStep.phase !== tender.currentPhase ? previousStep.phase : undefined
         );
 
-        // If moving to previous phase, update phase
-        if (previousStep.phase !== tender.currentPhase) {
-          await storage.updateTenderStep(tenderId, previousStep.stepNumber, previousActorId, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
-        }
+        console.log(`Tender ${tenderId} sent back to step ${previousStep.stepNumber} (${previousStep.title}) assigned to ${previousActorId}`);
       }
 
       res.json({ message: "Tender rejected and sent back for modifications" });
