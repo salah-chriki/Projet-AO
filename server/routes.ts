@@ -253,7 +253,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/tenders/:id/reject', isTempAuthenticated, async (req: any, res) => {
     try {
       const { comments } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = req.session.userId;
       const tenderId = req.params.id;
 
       // Get current tender
