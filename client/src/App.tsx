@@ -35,7 +35,7 @@ function Router() {
               <div className="flex h-screen bg-slate-50">
                 <Sidebar />
                 <div className="flex-1 overflow-hidden">
-                  <Dashboard />
+                  <ActorDashboard />
                 </div>
               </div>
             )}

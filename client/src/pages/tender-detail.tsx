@@ -250,6 +250,11 @@ export default function TenderDetail() {
   );
 
   const isCurrentActor = user && tender.currentActor && user.id === tender.currentActor.id;
+  
+  // Debug logging to understand the data structure
+  console.log("Debug - User:", user);
+  console.log("Debug - Current Actor:", tender.currentActor);
+  console.log("Debug - Is Current Actor:", isCurrentActor);
 
   const onSubmitComment = (data: CommentFormData) => {
     addCommentMutation.mutate(data);
