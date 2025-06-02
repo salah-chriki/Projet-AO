@@ -14,6 +14,17 @@ export default function ActorBadge({ role, size = "md" }: ActorBadgeProps) {
     lg: "px-3 py-1 text-sm"
   };
 
+  // Si l'acteur n'existe pas, afficher un badge par défaut
+  if (!actor) {
+    return (
+      <span 
+        className={`inline-flex items-center rounded-full font-medium text-white bg-gray-500 ${sizeClasses[size]}`}
+      >
+        {role || "N/A"}
+      </span>
+    );
+  }
+
   return (
     <span 
       className={`inline-flex items-center rounded-full font-medium text-white ${sizeClasses[size]}`}

@@ -463,7 +463,12 @@ export default function MyTaskTenderDetail() {
                   <div className="flex gap-3">
                     <Button
                       type="button"
-                      onClick={approvalForm.handleSubmit(onApprove)}
+                      onClick={() => {
+                        console.log("Approve button clicked");
+                        const formData = approvalForm.getValues();
+                        console.log("Form data:", formData);
+                        onApprove(formData);
+                      }}
                       disabled={approveMutation.isPending}
                       className="bg-green-600 hover:bg-green-700 flex-1"
                       size="sm"
@@ -474,7 +479,12 @@ export default function MyTaskTenderDetail() {
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={approvalForm.handleSubmit(onReject)}
+                      onClick={() => {
+                        console.log("Reject button clicked");
+                        const formData = approvalForm.getValues();
+                        console.log("Form data:", formData);
+                        onReject(formData);
+                      }}
                       disabled={rejectMutation.isPending}
                       className="border-orange-500 text-orange-600 hover:bg-orange-50 flex-1"
                       size="sm"
