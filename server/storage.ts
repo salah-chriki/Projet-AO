@@ -548,38 +548,17 @@ export class DatabaseStorage implements IStorage {
     const directionDetails = [];
 
     directionsStructure.forEach(({ direction, divisions }) => {
-      divisions.forEach((division, index) => {
-        const divisionData = tendersByDivision.filter(item => item.division === division);
-        const totalProjects = divisionData.reduce((sum, item) => sum + Number(item.count), 0);
+      // Calculer les totaux pour toute la direction
+      const directionData = tendersByDivision.filter(item => divisions.includes(item.division));
+      const totalAO = directionData.reduce((sum, item) => sum + Number(item.count), 0);
+      const enCours = directionData.filter(item => item.status === 'active').reduce((sum, item) => sum + Number(item.count), 0);
+      const termines = directionData.filter(item => item.status === 'completed').reduce((sum, item) => sum + Number(item.count), 0);
 
-        // Calculer les différents statuts basés sur les données réelles
-        const daoNonEncoreRecu = divisionData.filter(item => 
-          item.currentStep === 1 && item.currentPhase === 1
-        ).reduce((sum, item) => sum + Number(item.count), 0);
-
-        const enCoursDeVerificationParLeSM = divisionData.filter(item => 
-          item.currentStep === 2 && item.currentPhase === 1
-        ).reduce((sum, item) => sum + Number(item.count), 0);
-
-        const phaseDesoumission = divisionData.filter(item => 
-          item.currentPhase === 2
-        ).reduce((sum, item) => sum + Number(item.count), 0);
-
-        directionDetails.push({
-          direction: index === 0 ? direction : "", // Afficher le nom de la direction seulement sur la première ligne
-          division,
-          nbrProjet: totalProjects,
-          daoNonEncoreRecu,
-          enCoursDeVerificationParLeSM,
-          nonEncorePublie: 0,
-          phaseDesoumission,
-          seanceAOEnCours: 0,
-          approbationEnCours: 0,
-          visaEnCours: 0,
-          notificationEnCours: 0,
-          osEnCoursDElaboration: 0,
-          osNotifie: divisionData.filter(item => item.status === 'completed').reduce((sum, item) => sum + Number(item.count), 0)
-        });
+      directionDetails.push({
+        direction,
+        totalAO,
+        enCours,
+        termines
       });
     });
 
