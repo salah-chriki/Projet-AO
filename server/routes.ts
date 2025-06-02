@@ -144,7 +144,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertTenderSchema.parse({
         ...req.body,
-        createdById: req.user.claims.sub,
+        deadline: req.body.deadline ? new Date(req.body.deadline) : undefined,
+        amount: parseFloat(req.body.amount),
+        createdById: req.session.userId,
         currentStep: 1,
         currentPhase: 1,
         status: 'active'
