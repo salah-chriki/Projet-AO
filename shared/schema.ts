@@ -26,16 +26,18 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table (mandatory for Replit Auth)
+// User storage table
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
   email: varchar("email").unique(),
+  username: varchar("username").unique().notNull(),
+  password: varchar("password").notNull(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").notNull(), // ST, SM, CE, SB, SOR, TP, ADMIN
-  division: varchar("division"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
-  department: varchar("department"), // DSI, DRHS, DF, DCSP, DSA, DPV, etc.
+  direction: varchar("direction"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
+  division: varchar("division"), // DSI, DRHS, DF, DCSP, DSA, DPV, DCPVOV, DPPA, DSSPAAA, DIC, DL, DPIV, DERSP, DNQSPS, DR, DCC, DCGAI
   isAdmin: boolean("is_admin").default(false),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -201,6 +203,11 @@ export const insertTenderDocumentSchema = createInsertSchema(tenderDocuments).om
   createdAt: true,
 });
 
+export const insertUserSchema = createInsertSchema(users).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const upsertUserSchema = createInsertSchema(users).pick({
   id: true,
   email: true,
@@ -213,6 +220,7 @@ export const upsertUserSchema = createInsertSchema(users).pick({
 });
 
 // Types
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Tender = typeof tenders.$inferSelect;
