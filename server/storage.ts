@@ -4,16 +4,19 @@ import {
   workflowSteps,
   tenderStepHistory,
   tenderComments,
+  tenderDocuments,
   type User,
   type UpsertUser,
   type Tender,
   type WorkflowStep,
   type TenderStepHistory,
   type TenderComment,
+  type TenderDocument,
   type InsertTender,
   type InsertWorkflowStep,
   type InsertTenderStepHistory,
   type InsertTenderComment,
+  type InsertTenderDocument,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, asc } from "drizzle-orm";
@@ -48,6 +51,10 @@ export interface IStorage {
   // Comment operations
   createComment(comment: InsertTenderComment): Promise<TenderComment>;
   getTenderComments(tenderId: string): Promise<TenderComment[]>;
+
+  // Document operations
+  createTenderDocument(document: InsertTenderDocument): Promise<TenderDocument>;
+  getTenderDocuments(tenderId: string): Promise<TenderDocument[]>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<any>;
@@ -325,6 +332,23 @@ export class DatabaseStorage implements IStorage {
       .from(tenderComments)
       .where(eq(tenderComments.tenderId, tenderId))
       .orderBy(desc(tenderComments.createdAt));
+  }
+
+  // Document operations
+  async createTenderDocument(document: InsertTenderDocument): Promise<TenderDocument> {
+    const [newDocument] = await db
+      .insert(tenderDocuments)
+      .values(document)
+      .returning();
+    return newDocument;
+  }
+
+  async getTenderDocuments(tenderId: string): Promise<TenderDocument[]> {
+    return await db
+      .select()
+      .from(tenderDocuments)
+      .where(eq(tenderDocuments.tenderId, tenderId))
+      .orderBy(desc(tenderDocuments.createdAt));
   }
 
   // Dashboard statistics

@@ -15,6 +15,26 @@ import path from "path";
 import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Create uploads directory if it doesn't exist
+  const uploadsDir = path.join(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  // Configure multer for file uploads
+  const upload = multer({
+    storage: multer.diskStorage({
+      destination: uploadsDir,
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+      }
+    }),
+    limits: {
+      fileSize: 10 * 1024 * 1024 // 10MB limit
+    }
+  });
+
   // Auth middleware
   await setupTempAuth(app);
 
@@ -129,14 +149,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/tenders', isTempAuthenticated, async (req: any, res) => {
+  // Create tender with documents
+  app.post('/api/tenders', isTempAuthenticated, upload.array('documents', 10), async (req: any, res) => {
     try {
       const validatedData = insertTenderSchema.parse({
         ...req.body,
         createdById: req.user.claims.sub,
+        currentStep: 1,
+        currentPhase: 1,
+        status: 'active'
       });
       
       const tender = await storage.createTender(validatedData);
+      
+      // Handle uploaded documents
+      if (req.files && req.files.length > 0) {
+        for (const file of req.files) {
+          const documentData = {
+            tenderId: tender.id,
+            fileName: file.filename,
+            originalFileName: file.originalname,
+            fileSize: file.size,
+            mimeType: file.mimetype,
+            documentType: req.body.documentTypes?.[req.files.indexOf(file)] || 'other',
+            uploadedById: req.user.claims.sub
+          };
+          
+          await storage.createTenderDocument(documentData);
+        }
+      }
+      
+      // Assign to current actor (ST at step 1)
+      const firstStep = await storage.getWorkflowSteps();
+      const currentStep = firstStep.find(s => s.phase === 1 && s.stepNumber === 1);
+      if (currentStep) {
+        const stUser = await storage.getUsersByRole('ST');
+        if (stUser.length > 0) {
+          await storage.updateTenderStep(tender.id, 1, stUser[0].id);
+        }
+      }
+      
       res.status(201).json(tender);
     } catch (error) {
       console.error("Error creating tender:", error);
