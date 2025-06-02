@@ -169,15 +169,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Assign to current actor (ST at step 1)
-      const firstStep = await storage.getWorkflowSteps();
-      const currentStep = firstStep.find(s => s.phase === 1 && s.stepNumber === 1);
-      if (currentStep) {
-        const stUser = await storage.getUsersByRole('ST');
-        if (stUser.length > 0) {
-          await storage.updateTenderStep(tender.id, 1, stUser[0].id);
-        }
-      }
+      // Assign to the ST actor who created it (current user)
+      await storage.updateTenderStep(tender.id, 1, req.session.userId);
       
       res.status(201).json(tender);
     } catch (error) {
