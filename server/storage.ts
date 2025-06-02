@@ -66,6 +66,7 @@ export interface IStorage {
   getDashboardStats(): Promise<any>;
   getActorWorkload(): Promise<any>;
   getChartData(): Promise<any>;
+  getDirectionDetails(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -518,6 +519,71 @@ export class DatabaseStorage implements IStorage {
     });
 
     return chartData;
+  }
+
+  async getDirectionDetails(): Promise<any> {
+    // Récupérer les données détaillées par direction et division
+    const tendersByDivision = await db
+      .select({
+        division: tenders.division,
+        status: tenders.status,
+        currentStep: tenders.currentStep,
+        currentPhase: tenders.currentPhase,
+        count: sql`count(*)`
+      })
+      .from(tenders)
+      .groupBy(tenders.division, tenders.status, tenders.currentStep, tenders.currentPhase);
+
+    // Structure des directions et divisions basée sur la structure française
+    const directionsStructure = [
+      { direction: "DSI", divisions: ["DSI", "DRHS"] },
+      { direction: "DAF", divisions: ["DF", "DCSP", "DSA"] },
+      { direction: "DPPAV", divisions: ["DPV", "DCPGOV", "DPPA", "DSSMAA"] },
+      { direction: "DCDA", divisions: ["DIC", "DT"] },
+      { direction: "DIL", divisions: ["DPRV", "DERSP", "DERAI"] },
+      { direction: "DERAI", divisions: ["DR", "DCC"] },
+      { direction: "DCGAI", divisions: ["DCGAI"] }
+    ];
+
+    const directionDetails = [];
+
+    directionsStructure.forEach(({ direction, divisions }) => {
+      divisions.forEach((division, index) => {
+        const divisionData = tendersByDivision.filter(item => item.division === division);
+        const totalProjects = divisionData.reduce((sum, item) => sum + Number(item.count), 0);
+
+        // Calculer les différents statuts basés sur les données réelles
+        const daoNonEncoreRecu = divisionData.filter(item => 
+          item.currentStep === 1 && item.currentPhase === 1
+        ).reduce((sum, item) => sum + Number(item.count), 0);
+
+        const enCoursDeVerificationParLeSM = divisionData.filter(item => 
+          item.currentStep === 2 && item.currentPhase === 1
+        ).reduce((sum, item) => sum + Number(item.count), 0);
+
+        const phaseDesoumission = divisionData.filter(item => 
+          item.currentPhase === 2
+        ).reduce((sum, item) => sum + Number(item.count), 0);
+
+        directionDetails.push({
+          direction: index === 0 ? direction : "", // Afficher le nom de la direction seulement sur la première ligne
+          division,
+          nbrProjet: totalProjects,
+          daoNonEncoreRecu,
+          enCoursDeVerificationParLeSM,
+          nonEncorePublie: 0,
+          phaseDesoumission,
+          seanceAOEnCours: 0,
+          approbationEnCours: 0,
+          visaEnCours: 0,
+          notificationEnCours: 0,
+          osEnCoursDElaboration: 0,
+          osNotifie: divisionData.filter(item => item.status === 'completed').reduce((sum, item) => sum + Number(item.count), 0)
+        });
+      });
+    });
+
+    return directionDetails;
   }
 }
 

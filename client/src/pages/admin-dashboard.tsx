@@ -4,6 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import DirectionDetailsTable from "@/components/direction-details-table";
 
 export default function AdminDashboard() {
   const { user, isLoading } = useAuth();
@@ -255,6 +256,11 @@ export default function AdminDashboard() {
             )}
           </CardContent>
         </Card>
+      </div>
+
+      {/* Section Détails par Direction */}
+      <div className="mt-8">
+        <DirectionDetailsTable />
       </div>
     </div>
   );
