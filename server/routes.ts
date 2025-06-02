@@ -368,80 +368,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
       
-      // Create user with admin's direction and division
+      // Create user with simple approach
+      const userId = `user_${Date.now()}`;
       const userData = {
-        id: username, // Use username as ID for simplicity
+        id: userId,
         username,
         password: hashedPassword,
         email,
         firstName,
         lastName,
-        role,
-        direction: adminUser.direction, // Inherit from admin
-        division: adminUser.division,   // Inherit from admin
-        isAdmin: role === 'ADMIN',
-        isActive: true,
       };
       
-      const newUser = await storage.createUser(userData);
+      await storage.createUser(userData);
       
-      // Remove password from response
-      const { password: _, ...userResponse } = newUser;
-      res.status(201).json(userResponse);
+      res.status(201).json({ message: "User created successfully" });
     } catch (error) {
       console.error("Error creating user:", error);
       res.status(500).json({ message: "Failed to create user" });
-    }
-  });
-
-  // Update user (admin only)
-  app.put('/api/users/:id', isAuthenticated, isAdmin, async (req: any, res) => {
-    try {
-      const { id } = req.params;
-      const { username, email, firstName, lastName, role, isActive } = req.body;
-      
-      const updatedUser = await storage.updateUser(id, {
-        username,
-        email,
-        firstName,
-        lastName,
-        role,
-        isAdmin: role === 'ADMIN',
-        isActive,
-      });
-      
-      res.json(updatedUser);
-    } catch (error) {
-      console.error("Error updating user:", error);
-      res.status(500).json({ message: "Failed to update user" });
-    }
-  });
-
-  // Delete user (admin only)
-  app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req: any, res) => {
-    try {
-      const { id } = req.params;
-      await storage.deleteUser(id);
-      res.json({ message: "User deleted successfully" });
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      res.status(500).json({ message: "Failed to delete user" });
-    }
-  });
-
-  // Reset user password (admin only)
-  app.post('/api/users/:id/reset-password', isAuthenticated, isAdmin, async (req: any, res) => {
-    try {
-      const { id } = req.params;
-      const { newPassword } = req.body;
-      
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await storage.updateUserPassword(id, hashedPassword);
-      
-      res.json({ message: "Password reset successfully" });
-    } catch (error) {
-      console.error("Error resetting password:", error);
-      res.status(500).json({ message: "Failed to reset password" });
     }
   });
 
