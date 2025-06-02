@@ -30,6 +30,8 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   getUsersByRole(role: string): Promise<User[]>;
   updateUserRole(userId: string, role: string, isAdmin?: boolean): Promise<User>;
+  updateUser(userId: string, updates: Partial<User>): Promise<User>;
+  updateUserPassword(userId: string, hashedPassword: string): Promise<void>;
   deleteUser(userId: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
 

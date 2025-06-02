@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupSimpleAuth, isAuthenticated } from "./simpleAuth";
+import { setupSimpleAuth, isAuthenticated, isAdmin } from "./simpleAuth";
+import bcrypt from "bcrypt";
 import { 
   insertTenderSchema, 
   insertTenderCommentSchema, 
@@ -349,13 +350,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User management routes (admin only)
-  app.get('/api/users', isAuthenticated, async (req: any, res) => {
+  app.get('/api/users', isAuthenticated, isAdmin, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
       const users = await storage.getAllUsers();
       res.json(users);
     } catch (error) {
@@ -364,19 +360,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/users', isAuthenticated, async (req: any, res) => {
+  app.post('/api/users', isAuthenticated, isAdmin, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
-      const validatedData = upsertUserSchema.parse(req.body);
-      const newUser = await storage.upsertUser(validatedData);
-      res.status(201).json(newUser);
+      const { username, password, email, firstName, lastName, role } = req.body;
+      const adminUser = req.user;
+      
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create user with admin's direction and division
+      const userData = {
+        id: username, // Use username as ID for simplicity
+        username,
+        password: hashedPassword,
+        email,
+        firstName,
+        lastName,
+        role,
+        direction: adminUser.direction, // Inherit from admin
+        division: adminUser.division,   // Inherit from admin
+        isAdmin: role === 'ADMIN',
+        isActive: true,
+      };
+      
+      const newUser = await storage.createUser(userData);
+      
+      // Remove password from response
+      const { password: _, ...userResponse } = newUser;
+      res.status(201).json(userResponse);
     } catch (error) {
       console.error("Error creating user:", error);
       res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
+  // Update user (admin only)
+  app.put('/api/users/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { username, email, firstName, lastName, role, isActive } = req.body;
+      
+      const updatedUser = await storage.updateUser(id, {
+        username,
+        email,
+        firstName,
+        lastName,
+        role,
+        isAdmin: role === 'ADMIN',
+        isActive,
+      });
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  // Delete user (admin only)
+  app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteUser(id);
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  // Reset user password (admin only)
+  app.post('/api/users/:id/reset-password', isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { newPassword } = req.body;
+      
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await storage.updateUserPassword(id, hashedPassword);
+      
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ message: "Failed to reset password" });
     }
   });
 
