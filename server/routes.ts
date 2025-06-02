@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupTempAuth, isTempAuthenticated } from "./tempAuth";
+import { setupSimpleAuth, isAuthenticated } from "./simpleAuth";
 import { 
   insertTenderSchema, 
   insertTenderCommentSchema, 
@@ -35,19 +35,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auth middleware
-  await setupTempAuth(app);
+  // Auth middleware - handled by setupSimpleAuth below
 
   // Initialize real workflow steps
   const { initializeRealWorkflowSteps } = await import("./realWorkflowSteps");
   await initializeRealWorkflowSteps();
   
+  // Setup authentication
+  await setupSimpleAuth(app);
+
   // Seed real tender data
   const { seedRealTenders } = await import("./realSeedData");
   await seedRealTenders();
 
-  // Auth routes
-  app.get('/api/auth/user', isTempAuthenticated, async (req: any, res) => {
+  // Auth routes are handled by setupSimpleAuth
+
+  // Protected routes
+  app.get('/api/test', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
@@ -59,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard statistics
-  app.get('/api/dashboard/stats', isTempAuthenticated, async (req, res) => {
+  app.get('/api/dashboard/stats', isAuthenticated, async (req, res) => {
     try {
       const stats = await storage.getDashboardStats();
       const workload = await storage.getActorWorkload();
@@ -71,7 +75,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Tender routes
-  app.get('/api/tenders', isTempAuthenticated, async (req, res) => {
+  app.get('/api/tenders', isAuthenticated, async (req, res) => {
     try {
       const tenders = await storage.getAllTenders();
       res.json(tenders);
@@ -81,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/tenders/my-tasks', isTempAuthenticated, async (req: any, res) => {
+  app.get('/api/tenders/my-tasks', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.session.userId;
       const user = await storage.getUser(userId);
@@ -100,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/tenders/:id', isTempAuthenticated, async (req, res) => {
+  app.get('/api/tenders/:id', isAuthenticated, async (req, res) => {
     try {
       const tender = await storage.getTenderWithDetails(req.params.id);
       if (!tender) {
@@ -114,7 +118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get tender timeline
-  app.get('/api/tenders/:id/timeline', isTempAuthenticated, async (req, res) => {
+  app.get('/api/tenders/:id/timeline', isAuthenticated, async (req, res) => {
     try {
       const history = await storage.getTenderStepHistory(req.params.id);
       const steps = await storage.getWorkflowSteps();
@@ -140,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create tender with documents
-  app.post('/api/tenders', isTempAuthenticated, upload.array('documents', 10), async (req: any, res) => {
+  app.post('/api/tenders', isAuthenticated, upload.array('documents', 10), async (req: any, res) => {
     try {
       const validatedData = insertTenderSchema.parse({
         ...req.body,
@@ -181,7 +185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Tender step actions
-  app.post('/api/tenders/:id/approve', isTempAuthenticated, async (req: any, res) => {
+  app.post('/api/tenders/:id/approve', isAuthenticated, async (req: any, res) => {
     try {
       const { nextStepStartDate, nextStepEndDate, comments } = req.body;
       const userId = req.session.userId;
@@ -250,7 +254,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/tenders/:id/reject', isTempAuthenticated, async (req: any, res) => {
+  app.post('/api/tenders/:id/reject', isAuthenticated, async (req: any, res) => {
     try {
       const { comments } = req.body;
       const userId = req.session.userId;
@@ -314,7 +318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Comment routes
-  app.get('/api/tenders/:id/comments', isTempAuthenticated, async (req, res) => {
+  app.get('/api/tenders/:id/comments', isAuthenticated, async (req, res) => {
     try {
       const comments = await storage.getTenderComments(req.params.id);
       res.json(comments);
@@ -324,7 +328,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/tenders/:id/comments', isTempAuthenticated, async (req: any, res) => {
+  app.post('/api/tenders/:id/comments', isAuthenticated, async (req: any, res) => {
     try {
       const validatedData = insertTenderCommentSchema.parse({
         ...req.body,
@@ -341,7 +345,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User management routes (admin only)
-  app.get('/api/users', isTempAuthenticated, async (req: any, res) => {
+  app.get('/api/users', isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
       if (!user?.isAdmin) {
@@ -356,7 +360,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/users', isTempAuthenticated, async (req: any, res) => {
+  app.post('/api/users', isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
       if (!user?.isAdmin) {
@@ -372,7 +376,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/users/:id/role', isTempAuthenticated, async (req: any, res) => {
+  app.put('/api/users/:id/role', isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
       if (!user?.isAdmin) {
@@ -388,7 +392,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/users/:id', isTempAuthenticated, async (req: any, res) => {
+  app.delete('/api/users/:id', isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
       if (!user?.isAdmin) {
@@ -404,7 +408,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Workflow steps
-  app.get('/api/workflow/steps', isTempAuthenticated, async (req, res) => {
+  app.get('/api/workflow/steps', isAuthenticated, async (req, res) => {
     try {
       const steps = await storage.getWorkflowSteps();
       res.json(steps);

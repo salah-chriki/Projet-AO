@@ -6,6 +6,7 @@ import {
   tenderComments,
   tenderDocuments,
   type User,
+  type InsertUser,
   type UpsertUser,
   type Tender,
   type WorkflowStep,
