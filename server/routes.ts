@@ -37,12 +37,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Auth middleware - handled by setupSimpleAuth below
 
+  // Setup authentication first
+  await setupSimpleAuth(app);
+
+  // Initialize demo users
+  const { initializeDemoUsers } = await import("./initUsers");
+  await initializeDemoUsers();
+
   // Initialize real workflow steps
   const { initializeRealWorkflowSteps } = await import("./realWorkflowSteps");
   await initializeRealWorkflowSteps();
-  
-  // Setup authentication
-  await setupSimpleAuth(app);
 
   // Seed real tender data
   const { seedRealTenders } = await import("./realSeedData");
@@ -50,12 +54,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Auth routes are handled by setupSimpleAuth
 
-  // Protected routes
-  app.get('/api/test', isAuthenticated, async (req: any, res) => {
+  // Dashboard statistics
+  app.get('/api/dashboard/stats', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      const stats = await storage.getDashboardStats();
+      const workload = await storage.getActorWorkload();
+      res.json({ ...stats, workload });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
