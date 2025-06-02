@@ -14,12 +14,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupTempAuth(app);
 
-  // Initialize workflow steps
-  await storage.initializeWorkflowSteps();
+  // Initialize real workflow steps
+  const { initializeRealWorkflowSteps } = await import("./realWorkflowSteps");
+  await initializeRealWorkflowSteps();
   
-  // Seed example data
-  const { seedExampleTenders } = await import("./seedData");
-  await seedExampleTenders();
+  // Seed real tender data
+  const { seedRealTenders } = await import("./realSeedData");
+  await seedRealTenders();
 
   // Auth routes
   app.get('/api/auth/user', isTempAuthenticated, async (req: any, res) => {
