@@ -79,6 +79,12 @@ export default function TenderDetail() {
     retry: false,
   });
 
+  const { data: documents, isLoading: documentsLoading } = useQuery({
+    queryKey: [`/api/tenders/${tenderId}/documents`],
+    enabled: !!tenderId && isAuthenticated,
+    retry: false,
+  });
+
   const commentForm = useForm<CommentFormData>({
     resolver: zodResolver(commentSchema),
     defaultValues: {
@@ -353,6 +359,61 @@ export default function TenderDetail() {
                     <label className="text-sm font-medium text-slate-500">Description</label>
                     <p className="text-slate-900 mt-1">{tender.tender.description}</p>
                   </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Documents */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Documents attachés
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {documentsLoading ? (
+                  <div className="space-y-3">
+                    {[...Array(2)].map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : documents && documents.length > 0 ? (
+                  <div className="space-y-3">
+                    {documents.map((doc: any) => (
+                      <div key={doc.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900">{doc.originalFileName}</p>
+                            <div className="flex items-center space-x-4 text-sm text-slate-500">
+                              <span>{doc.documentType}</span>
+                              <span>{(doc.fileSize / 1024).toFixed(1)} KB</span>
+                              <span>{formatDate(doc.createdAt)}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => window.open(`/api/tenders/${tenderId}/documents/${doc.id}/download`, '_blank')}
+                        >
+                          Télécharger
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-4">Aucun document attaché</p>
                 )}
               </CardContent>
             </Card>

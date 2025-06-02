@@ -322,6 +322,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Document routes
+  app.get('/api/tenders/:id/documents', isAuthenticated, async (req, res) => {
+    try {
+      const documents = await storage.getTenderDocuments(req.params.id);
+      res.json(documents);
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      res.status(500).json({ message: "Failed to fetch documents" });
+    }
+  });
+
+  app.get('/api/tenders/:id/documents/:docId/download', isAuthenticated, async (req, res) => {
+    try {
+      const documents = await storage.getTenderDocuments(req.params.id);
+      const document = documents.find(doc => doc.id === req.params.docId);
+      
+      if (!document) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      const filePath = `uploads/${document.fileName}`;
+      res.download(filePath, document.originalFileName);
+    } catch (error) {
+      console.error("Error downloading document:", error);
+      res.status(500).json({ message: "Failed to download document" });
+    }
+  });
+
   // Comment routes
   app.get('/api/tenders/:id/comments', isAuthenticated, async (req, res) => {
     try {

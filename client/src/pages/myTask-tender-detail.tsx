@@ -58,6 +58,11 @@ export default function MyTaskTenderDetail() {
     queryKey: ["/api/workflow/steps"],
   });
 
+  const { data: documents, isLoading: documentsLoading } = useQuery({
+    queryKey: [`/api/tenders/${tenderId}/documents`],
+    enabled: !!tenderId,
+  });
+
   const approveMutation = useMutation({
     mutationFn: async (data: ApprovalFormData) => {
       await apiRequest("POST", `/api/tenders/${tenderId}/approve`, data);
@@ -247,7 +252,106 @@ export default function MyTaskTenderDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Current Step Action */}
+            {/* Tender Info - Moved to top */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Informations générales</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Référence</label>
+                    <p className="text-lg font-semibold text-slate-900">{tender.tender.reference}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Montant</label>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {formatCurrency(tender.tender.amount)}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Division</label>
+                    <div className="mt-1">
+                      <DivisionBadge 
+                        division={tender.tender.division} 
+                        department={tender.tender.department}
+                        showDepartment={true}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Échéance</label>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {formatDate(tender.tender.deadline)}
+                    </p>
+                  </div>
+                </div>
+                
+                {tender.tender.description && (
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Description</label>
+                    <p className="text-slate-900 mt-1">{tender.tender.description}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Documents */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Documents attachés
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {documentsLoading ? (
+                  <div className="space-y-3">
+                    {[...Array(2)].map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : documents && documents.length > 0 ? (
+                  <div className="space-y-3">
+                    {documents.map((doc: any) => (
+                      <div key={doc.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900">{doc.originalFileName}</p>
+                            <div className="flex items-center space-x-4 text-sm text-slate-500">
+                              <span>{doc.documentType}</span>
+                              <span>{(doc.fileSize / 1024).toFixed(1)} KB</span>
+                              <span>{formatDate(doc.createdAt)}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => window.open(`/api/tenders/${tenderId}/documents/${doc.id}/download`, '_blank')}
+                        >
+                          Télécharger
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-500 text-center py-4">Aucun document attaché</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Current Step Action - Moved after tender details */}
             <Card className="border-blue-200 bg-blue-50">
               <CardHeader>
                 <CardTitle className="flex items-center text-blue-900">
