@@ -29,7 +29,8 @@ import {
 
 const approvalSchema = z.object({
   comments: z.string().optional(),
-  deadline: z.string().optional(),
+  nextStepStartDate: z.string().min(1, "La date de début est obligatoire"),
+  nextStepEndDate: z.string().min(1, "La date de fin est obligatoire"),
 });
 
 type ApprovalFormData = z.infer<typeof approvalSchema>;
@@ -43,7 +44,8 @@ export default function MyTaskTenderDetail() {
     resolver: zodResolver(approvalSchema),
     defaultValues: {
       comments: "",
-      deadline: "",
+      nextStepStartDate: "",
+      nextStepEndDate: "",
     },
   });
 
@@ -289,23 +291,52 @@ export default function MyTaskTenderDetail() {
                       )}
                     />
                     
-                    <FormField
-                      control={approvalForm.control}
-                      name="deadline"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Échéance pour la prochaine étape (optionnel)</FormLabel>
-                          <FormControl>
-                            <input
-                              type="date"
-                              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormField
+                        control={approvalForm.control}
+                        name="nextStepStartDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Date de début - Prochaine étape *</FormLabel>
+                            <FormControl>
+                              <input
+                                type="date"
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={approvalForm.control}
+                        name="nextStepEndDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Date de fin - Prochaine étape *</FormLabel>
+                            <FormControl>
+                              <input
+                                type="date"
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="flex items-center">
+                        <CalendarDays className="w-4 h-4 mr-2 text-blue-600" />
+                        <p className="text-sm text-blue-800">
+                          <strong>Période de traitement :</strong> Définissez la période pendant laquelle la prochaine étape sera active.
+                        </p>
+                      </div>
+                    </div>
                     
                     <div className="flex space-x-3 pt-4">
                       <Button

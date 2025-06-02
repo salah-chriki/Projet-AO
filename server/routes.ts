@@ -183,8 +183,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Tender step actions
   app.post('/api/tenders/:id/approve', isTempAuthenticated, async (req: any, res) => {
     try {
-      const { deadline, comments } = req.body;
-      const userId = req.user.claims.sub;
+      const { nextStepStartDate, nextStepEndDate, comments } = req.body;
+      const userId = req.session.userId;
       const tenderId = req.params.id;
 
       // Get current tender
@@ -226,11 +226,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const nextActorId = nextActors[0]?.id;
 
         // Update tender to next step with proper phase handling
+        // Use end date as deadline, start date is informational
+        const stepDeadline = nextStepEndDate ? new Date(nextStepEndDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        
         await storage.updateTenderStep(
           tenderId,
           nextStep.stepNumber,
           nextActorId,
-          deadline ? new Date(deadline) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          stepDeadline,
           nextStep.phase !== tender.currentPhase ? nextStep.phase : undefined
         );
 
