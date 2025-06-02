@@ -404,6 +404,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user (admin only)
+  app.put('/api/users/:id', isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { username, email, firstName, lastName, role, isActive } = req.body;
+      
+      const updatedUser = await storage.updateUser(id, {
+        username,
+        email,
+        firstName,
+        lastName,
+        role,
+        isAdmin: role === 'ADMIN',
+        isActive,
+      });
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
   app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       const { id } = req.params;
