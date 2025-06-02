@@ -1,5 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import {
   LayoutDashboard,
   FileText,
@@ -41,6 +43,23 @@ const userItems = [
 export default function Sidebar() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/auth/logout");
+    },
+    onSuccess: () => {
+      // Clear all queries from cache
+      queryClient.clear();
+      // Force reload to ensure complete state reset
+      window.location.href = "/login";
+    },
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   if (!user) return null;
 
@@ -106,13 +125,14 @@ export default function Sidebar() {
               </Link>
             );
           })}
-          <a
-            href="/api/logout"
-            className="flex items-center px-6 py-3 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+          <button
+            onClick={handleLogout}
+            disabled={logoutMutation.isPending}
+            className="w-full flex items-center px-6 py-3 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 disabled:opacity-50"
           >
             <LogOut className="w-5 h-5 mr-3" />
-            Déconnexion
-          </a>
+            {logoutMutation.isPending ? "Déconnexion..." : "Déconnexion"}
+          </button>
         </div>
       </nav>
     </div>

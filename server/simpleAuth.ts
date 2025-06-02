@@ -72,6 +72,17 @@ export async function setupSimpleAuth(app: Express) {
       if (err) {
         return res.status(500).json({ message: "Could not log out" });
       }
+      res.clearCookie('connect.sid');
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get('/api/logout', (req, res) => {
+    (req as any).session.destroy((err: any) => {
+      if (err) {
+        return res.status(500).json({ message: "Could not log out" });
+      }
+      res.clearCookie('connect.sid');
       res.json({ message: "Logged out successfully" });
     });
   });
