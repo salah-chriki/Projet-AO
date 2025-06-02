@@ -150,6 +150,9 @@ export default function MyTaskTenderDetail() {
     step.stepNumber === tender?.tender.currentStep
   );
 
+  // Vérifier si l'utilisateur est l'acteur responsable de cette étape
+  const isCurrentActor = user && tender?.currentActor && user.id === tender.currentActor.id;
+
   const onApprove = (data: ApprovalFormData) => {
     approveMutation.mutate(data);
   };
@@ -182,6 +185,27 @@ export default function MyTaskTenderDetail() {
           <p className="mt-1 text-sm text-slate-500">
             L'appel d'offres demandé n'existe pas ou vous n'avez pas accès.
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si l'utilisateur n'est pas l'acteur responsable, rediriger
+  if (!isCurrentActor) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <Clock className="mx-auto h-12 w-12 text-slate-400" />
+          <h3 className="mt-2 text-sm font-medium text-slate-900">Accès non autorisé</h3>
+          <p className="mt-1 text-sm text-slate-500">
+            Cette tâche n'est pas assignée à votre rôle ou a déjà été traitée.
+          </p>
+          <Button
+            className="mt-4"
+            onClick={() => window.location.href = "/"}
+          >
+            Retour aux tâches
+          </Button>
         </div>
       </div>
     );

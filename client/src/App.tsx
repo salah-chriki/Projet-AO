@@ -15,7 +15,7 @@ import Actors from "@/pages/actors";
 import Sidebar from "@/components/sidebar";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return (
@@ -32,14 +32,27 @@ function Router() {
       ) : (
         <>
           <Route path="/">
-            {() => (
-              <div className="flex h-screen bg-slate-50">
-                <Sidebar />
-                <div className="flex-1 overflow-hidden">
-                  <ActorDashboard />
+            {() => {
+              // Rediriger l'admin vers le dashboard au lieu des tâches
+              if (user?.role === 'ADMIN') {
+                return (
+                  <div className="flex h-screen bg-slate-50">
+                    <Sidebar />
+                    <div className="flex-1 overflow-hidden">
+                      <Dashboard />
+                    </div>
+                  </div>
+                );
+              }
+              return (
+                <div className="flex h-screen bg-slate-50">
+                  <Sidebar />
+                  <div className="flex-1 overflow-hidden">
+                    <ActorDashboard />
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            }}
           </Route>
           <Route path="/dashboard">
             {() => (
