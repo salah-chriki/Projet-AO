@@ -6,15 +6,16 @@ import TenderCard from "@/components/tender-card";
 import { ACTOR_ROLES } from "@/lib/constants";
 
 export default function Dashboard() {
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats, isLoading: statsLoading, error: statsError } = useQuery({
     queryKey: ["/api/dashboard/stats"],
+    retry: false,
   });
 
   const { data: tenders, isLoading: tendersLoading } = useQuery({
     queryKey: ["/api/tenders"],
   });
 
-  if (statsLoading || tendersLoading) {
+  if (statsLoading || tendersLoading || statsError) {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-6">

@@ -449,7 +449,7 @@ export class DatabaseStorage implements IStorage {
       .groupBy(tenders.currentPhase);
 
     const totalDirections = await db
-      .select({ count: sql`count(distinct direction)` })
+      .select({ count: sql`count(distinct division)` })
       .from(tenders);
 
     return {
@@ -475,23 +475,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getChartData(): Promise<any> {
-    // Récupérer les données par statut et phase
-    const tendersByStatus = await db
+    // Récupérer les données réelles par division
+    const tendersByDivision = await db
       .select({
+        division: tenders.division,
         status: tenders.status,
         phase: tenders.currentPhase,
         count: sql`count(*)`
       })
       .from(tenders)
-      .groupBy(tenders.status, tenders.currentPhase);
+      .groupBy(tenders.division, tenders.status, tenders.currentPhase);
 
-    // Organiser les données pour le graphique
+    // Organiser les données pour le graphique basées sur les vraies données
     const directions = ['DAF', 'DHAU', 'DGAF', 'DIL', 'DPAU', 'DEC', 'DGOM'];
     const chartData = directions.map(direction => {
-      // Simulation de données pour chaque direction basée sur les vraies données
-      const total = Math.floor(Math.random() * 6) + 1; // Entre 1 et 6 comme dans l'image
-      const activeCount = Math.floor(total * 0.7);
-      const completedCount = total - activeCount;
+      const divisionData = tendersByDivision.filter(item => item.division === direction);
+      
+      const total = divisionData.reduce((sum, item) => sum + Number(item.count), 0);
+      const activeCount = divisionData.filter(item => item.status === 'active').reduce((sum, item) => sum + Number(item.count), 0);
+      const completedCount = divisionData.filter(item => item.status === 'completed').reduce((sum, item) => sum + Number(item.count), 0);
       
       const result: any = {
         direction,
@@ -500,12 +502,12 @@ export class DatabaseStorage implements IStorage {
         completed: completedCount,
       };
 
-      // Ajouter les différents statuts pour le graphique empilé selon l'image
+      // Ajouter les différents statuts pour le graphique empilé basés sur les vraies données
       result["OS Notifié"] = completedCount;
-      result["OS en cours d'élaboration"] = Math.floor(activeCount * 0.4);
-      result["Notification en cours"] = Math.floor(activeCount * 0.3);
-      result["Visa en cours"] = Math.floor(activeCount * 0.2);
-      result["Approbation en cours"] = Math.floor(activeCount * 0.1);
+      result["OS en cours d'élaboration"] = divisionData.filter(item => item.status === 'active' && item.phase === 1).reduce((sum, item) => sum + Number(item.count), 0);
+      result["Notification en cours"] = divisionData.filter(item => item.status === 'active' && item.phase === 2).reduce((sum, item) => sum + Number(item.count), 0);
+      result["Visa en cours"] = divisionData.filter(item => item.status === 'active' && item.phase === 3).reduce((sum, item) => sum + Number(item.count), 0);
+      result["Approbation en cours"] = 0;
       result["Séance AO en cours"] = 0;
       result["Phase de soumission"] = 0;
       result["Non Encore Publié"] = 0;

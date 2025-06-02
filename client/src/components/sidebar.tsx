@@ -8,6 +8,7 @@ import {
   Users,
   UserCircle,
   LogOut,
+  BarChart3,
 } from "lucide-react";
 
 const navigationItems = [
@@ -15,6 +16,12 @@ const navigationItems = [
     name: "Vue d'ensemble",
     href: "/dashboard",
     icon: LayoutDashboard,
+    adminOnly: true,
+  },
+  {
+    name: "Tableau de bord admin",
+    href: "/admin",
+    icon: BarChart3,
     adminOnly: true,
   },
   {

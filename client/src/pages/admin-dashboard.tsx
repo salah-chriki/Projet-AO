@@ -23,7 +23,7 @@ export default function AdminDashboard() {
       return;
     }
     
-    if (!isLoading && user && !user.isAdmin) {
+    if (!isLoading && user && user.role !== 'ADMIN') {
       toast({
         title: "Accès refusé",
         description: "Cette page est réservée aux administrateurs.",
