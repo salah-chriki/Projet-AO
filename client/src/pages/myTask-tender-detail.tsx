@@ -248,11 +248,11 @@ export default function MyTaskTenderDetail() {
         </div>
       </div>
 
-      <div className="p-6 max-w-5xl mx-auto space-y-6">
+      <div className="p-6 max-w-6xl mx-auto space-y-6">
+        {/* Top Section - Informations générales et rapides */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Tender Info - Moved to top */}
+          {/* Left - Informations générales */}
+          <div className="lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle>Informations générales</CardTitle>
@@ -270,13 +270,21 @@ export default function MyTaskTenderDetail() {
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-slate-500">Division</label>
+                    <label className="text-sm font-medium text-slate-500">Phase actuelle</label>
                     <div className="mt-1">
-                      <DivisionBadge 
-                        division={tender.tender.division} 
-                        department={tender.tender.department}
-                        showDepartment={true}
-                      />
+                      <PhaseBadge phase={tender.tender.currentPhase as 1 | 2 | 3} />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Étape actuelle</label>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {currentStep?.title || `Étape ${tender.tender.currentStep}`}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Acteur en attente</label>
+                    <div className="mt-1">
+                      <ActorBadge role={currentStep?.actorRole as any} />
                     </div>
                   </div>
                   <div>
@@ -295,185 +303,30 @@ export default function MyTaskTenderDetail() {
                 )}
               </CardContent>
             </Card>
-
-            {/* Documents */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Documents attachés
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {documentsLoading ? (
-                  <div className="space-y-3">
-                    {[...Array(2)].map((_, i) => (
-                      <div key={i} className="animate-pulse">
-                        <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-slate-200 rounded w-1/2"></div>
-                      </div>
-                    ))}
-                  </div>
-                ) : documents && documents.length > 0 ? (
-                  <div className="space-y-3">
-                    {documents.map((doc: any) => (
-                      <div key={doc.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="font-medium text-slate-900">{doc.originalFileName}</p>
-                            <div className="flex items-center space-x-4 text-sm text-slate-500">
-                              <span>{doc.documentType}</span>
-                              <span>{(doc.fileSize / 1024).toFixed(1)} KB</span>
-                              <span>{formatDate(doc.createdAt)}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => window.open(`/api/tenders/${tenderId}/documents/${doc.id}/download`, '_blank')}
-                        >
-                          Télécharger
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-slate-500 text-center py-4">Aucun document attaché</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Current Step Action - Moved after tender details */}
-            <Card className="border-blue-200 bg-blue-50">
-              <CardHeader>
-                <CardTitle className="flex items-center text-blue-900">
-                  <Clock className="w-5 h-5 mr-2" />
-                  Action requise - Étape {tender.tender.currentStep}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-white border border-blue-200 rounded-lg p-4 mb-4">
-                  <h4 className="font-medium text-blue-900 mb-2">
-                    {currentStep?.title || `Étape ${tender.tender.currentStep}`}
-                  </h4>
-                  <p className="text-blue-800 text-sm mb-3">
-                    {currentStep?.description || "Veuillez examiner cet appel d'offres et prendre une décision."}
-                  </p>
-                  <div className="bg-blue-50 rounded p-3 border border-blue-100">
-                    <p className="text-xs text-blue-700">
-                      <strong>Validation :</strong> L'appel d'offres passera automatiquement à l'étape suivante du processus.<br/>
-                      <strong>Modifications :</strong> L'appel d'offres retournera à l'étape précédente pour corrections.
-                    </p>
-                  </div>
-                </div>
-                
-                <Form {...approvalForm}>
-                  <form className="space-y-4">
-                    <FormField
-                      control={approvalForm.control}
-                      name="comments"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Commentaires (optionnel)</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Ajouter des commentaires sur votre décision..."
-                              rows={4}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={approvalForm.control}
-                        name="nextStepStartDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Date de début - Prochaine étape *</FormLabel>
-                            <FormControl>
-                              <input
-                                type="date"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={approvalForm.control}
-                        name="nextStepEndDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Date de fin - Prochaine étape *</FormLabel>
-                            <FormControl>
-                              <input
-                                type="date"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <div className="flex items-center">
-                        <CalendarDays className="w-4 h-4 mr-2 text-blue-600" />
-                        <p className="text-sm text-blue-800">
-                          <strong>Période de traitement :</strong> Définissez la période pendant laquelle la prochaine étape sera active.
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex space-x-3 pt-4">
-                      <Button
-                        type="button"
-                        onClick={approvalForm.handleSubmit(onApprove)}
-                        disabled={approveMutation.isPending}
-                        className="bg-green-600 hover:bg-green-700 flex-1"
-                        size="lg"
-                      >
-                        <CheckCircle className="w-5 h-5 mr-2" />
-                        {approveMutation.isPending ? "Validation en cours..." : "Valider et Passer à l'étape suivante"}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={approvalForm.handleSubmit(onReject)}
-                        disabled={rejectMutation.isPending}
-                        className="border-orange-500 text-orange-600 hover:bg-orange-50 flex-1"
-                        size="lg"
-                      >
-                        <XCircle className="w-5 h-5 mr-2" />
-                        {rejectMutation.isPending ? "Envoi en cours..." : "Demander des modifications"}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-
           </div>
 
-          {/* Sidebar */}
+          {/* Right Sidebar - Informations rapides et Progression */}
           <div className="space-y-6">
+            {/* Quick Info */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Informations rapides</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-500">Créé le</span>
+                  <span className="text-sm font-medium">{formatDate(tender.tender.createdAt)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-500">Créé par</span>
+                  <span className="text-sm font-medium">{tender.createdBy?.firstName} {tender.createdBy?.lastName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-500">Budget</span>
+                  <span className="text-sm font-medium">{formatCurrency(tender.tender.amount)}</span>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Progress */}
             <Card>
@@ -484,7 +337,7 @@ export default function MyTaskTenderDetail() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-sm">
                     <span>Phase {tender.tender.currentPhase}/3</span>
-                    <PhaseBadge phase={tender.tender.currentPhase as 1 | 2 | 3} size="sm" />
+                    <span className="text-sm font-medium">Étape {tender.tender.currentStep}</span>
                   </div>
                   
                   <div className="space-y-2">
@@ -507,7 +360,136 @@ export default function MyTaskTenderDetail() {
           </div>
         </div>
 
-        {/* Timeline */}
+        {/* Bottom Section - Documents et Action requise */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Documents */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Documents attachés
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {documentsLoading ? (
+                <div className="space-y-3">
+                  {[...Array(2)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-slate-200 rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : documents && documents.length > 0 ? (
+                <div className="space-y-3">
+                  {documents.map((doc: any) => (
+                    <div key={doc.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-900">{doc.originalFileName}</p>
+                          <div className="flex items-center space-x-4 text-sm text-slate-500">
+                            <span>{doc.documentType}</span>
+                            <span>{(doc.fileSize / 1024).toFixed(1)} KB</span>
+                            <span>{formatDate(doc.createdAt)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => window.open(`/api/tenders/${tenderId}/documents/${doc.id}/download`, '_blank')}
+                      >
+                        Télécharger
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-500 text-center py-4">Aucun document attaché</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Action requise - Remplace les commentaires */}
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-blue-900">
+                <Clock className="w-5 h-5 mr-2" />
+                Action requise
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-white border border-blue-200 rounded-lg p-4 mb-4">
+                <h4 className="font-medium text-blue-900 mb-2">
+                  {currentStep?.title || `Étape ${tender.tender.currentStep}`}
+                </h4>
+                <p className="text-blue-800 text-sm mb-3">
+                  {currentStep?.description || "Veuillez examiner cet appel d'offres et prendre une décision."}
+                </p>
+                <div className="bg-blue-50 rounded p-3 border border-blue-100">
+                  <p className="text-xs text-blue-700">
+                    <strong>Validation :</strong> L'appel d'offres passera automatiquement à l'étape suivante du processus.<br/>
+                    <strong>Modifications :</strong> L'appel d'offres retournera à l'étape précédente pour corrections.
+                  </p>
+                </div>
+              </div>
+              
+              <Form {...approvalForm}>
+                <form className="space-y-4">
+                  <FormField
+                    control={approvalForm.control}
+                    name="comments"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Commentaires (optionnel)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Ajoutez vos commentaires..."
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      onClick={approvalForm.handleSubmit(onApprove)}
+                      disabled={approveMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700 flex-1"
+                      size="sm"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      {approveMutation.isPending ? "Validation..." : "Valider"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={approvalForm.handleSubmit(onReject)}
+                      disabled={rejectMutation.isPending}
+                      className="border-orange-500 text-orange-600 hover:bg-orange-50 flex-1"
+                      size="sm"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      {rejectMutation.isPending ? "Envoi..." : "Modifications"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Historique des étapes */}
         <Card>
           <CardHeader>
             <CardTitle>Historique des étapes</CardTitle>
