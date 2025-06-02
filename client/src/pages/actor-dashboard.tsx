@@ -193,7 +193,7 @@ export default function ActorDashboard() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Link href={`/tenders/${task.id}`}>
+                      <Link href={`/myTask-tender-detail/${task.id}`}>
                         <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                           <FileText className="w-4 h-4 mr-2" />
                           Traiter
