@@ -59,8 +59,9 @@ export default function ActorDashboard() {
     );
   }
 
-  const userRole = user.role as keyof typeof ACTOR_ROLES;
-  const roleTitle = ACTOR_ROLES[userRole] || user.role;
+  const userRole = user?.role as keyof typeof ACTOR_ROLES;
+  const roleInfo = ACTOR_ROLES[userRole];
+  const roleTitle = typeof roleInfo === 'object' ? roleInfo.name : (roleInfo || user?.role || 'Utilisateur');
 
   return (
     <div className="p-6 space-y-6">
@@ -71,7 +72,7 @@ export default function ActorDashboard() {
           <div className="flex items-center gap-2 mt-2">
             <ActorBadge role={userRole} />
             <span className="text-slate-600">•</span>
-            <span className="text-slate-600">{user.firstName} {user.lastName}</span>
+            <span className="text-slate-600">{user?.firstName} {user?.lastName}</span>
           </div>
         </div>
       </div>
@@ -120,7 +121,7 @@ export default function ActorDashboard() {
           <CardContent>
             <div className="text-lg font-bold">{roleTitle}</div>
             <p className="text-xs text-muted-foreground">
-              {user.division} - {user.department}
+              {user?.division} - {user?.department}
             </p>
           </CardContent>
         </Card>
