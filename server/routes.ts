@@ -172,7 +172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             fileSize: file.size,
             mimeType: file.mimetype,
             documentType: req.body.documentTypes?.[req.files.indexOf(file)] || 'other',
-            uploadedById: req.user.claims.sub
+            uploadedById: req.user.id
           };
           
           await storage.createTenderDocument(documentData);
@@ -338,7 +338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertTenderCommentSchema.parse({
         ...req.body,
         tenderId: req.params.id,
-        authorId: req.user.claims.sub,
+        authorId: req.user.id,
       });
       
       const comment = await storage.createComment(validatedData);
@@ -390,7 +390,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/users/:id/role', isAuthenticated, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
+      const user = await storage.getUser(req.user.id);
       if (!user?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
