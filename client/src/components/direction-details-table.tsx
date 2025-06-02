@@ -34,25 +34,7 @@ export default function DirectionDetailsTable() {
     );
   }
 
-  const tableData: DirectionDetailsData[] = detailsData || [
-    { direction: "DSI", division: "DSI", nbrProjet: 6, daoNonEncoreRecu: 3, enCoursDeVerificationParLeSM: 1, nonEncorePublie: 0, phaseDesoumission: 2, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DRHS", nbrProjet: 3, daoNonEncoreRecu: 3, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "DAF", division: "DF", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DCSP", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DSA", nbrProjet: 2, daoNonEncoreRecu: 2, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "DPPAV", division: "DPV", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DCPGOV", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DPPA", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DSSMAA", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "DCDA", division: "DIC", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DT", nbrProjet: 3, daoNonEncoreRecu: 3, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "DIL", division: "DPRV", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DERSP", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DERAI", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "DERAI", division: "DR", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "", division: "DCC", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 },
-    { direction: "DCGAI", division: "DCGAI", nbrProjet: 0, daoNonEncoreRecu: 0, enCoursDeVerificationParLeSM: 0, nonEncorePublie: 0, phaseDesoumission: 0, seanceAOEnCours: 0, approbationEnCours: 0, visaEnCours: 0, notificationEnCours: 0, osEnCoursDElaboration: 0, osNotifie: 0 }
-  ];
+  const tableData: DirectionDetailsData[] = detailsData || [];
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
