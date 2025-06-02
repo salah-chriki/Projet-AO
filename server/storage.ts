@@ -34,6 +34,7 @@ export interface IStorage {
   updateUserPassword(userId: string, hashedPassword: string): Promise<void>;
   deleteUser(userId: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
+  getUserActivityCount(userId: string): Promise<number>;
 
   // Tender operations
   createTender(tender: InsertTender): Promise<Tender>;
@@ -155,6 +156,14 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users).orderBy(users.role, users.firstName);
+  }
+
+  async getUserActivityCount(userId: string): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(tenderStepHistory)
+      .where(eq(tenderStepHistory.actorId, userId));
+    return result?.count || 0;
   }
 
   // Tender operations

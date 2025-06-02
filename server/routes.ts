@@ -404,15 +404,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/users/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/users/:id', isAuthenticated, isAdmin, async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.claims.sub);
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
+      const { id } = req.params;
+      
+      // Check if user has associated data
+      const userHasData = await storage.getUserActivityCount(id);
+      
+      if (userHasData > 0) {
+        // Instead of deleting, deactivate the user
+        await storage.updateUser(id, { isActive: false });
+        res.json({ message: "User has been deactivated (has associated tender data)" });
+      } else {
+        // Safe to delete
+        await storage.deleteUser(id);
+        res.json({ message: "User deleted successfully" });
       }
-
-      await storage.deleteUser(req.params.id);
-      res.status(204).send();
     } catch (error) {
       console.error("Error deleting user:", error);
       res.status(500).json({ message: "Failed to delete user" });
