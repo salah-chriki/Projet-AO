@@ -97,6 +97,19 @@ export const tenderComments = pgTable("tender_comments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Documents attached to tenders
+export const tenderDocuments = pgTable("tender_documents", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenderId: uuid("tender_id").references(() => tenders.id),
+  fileName: varchar("file_name").notNull(),
+  originalFileName: varchar("original_file_name").notNull(),
+  fileSize: integer("file_size"),
+  mimeType: varchar("mime_type"),
+  documentType: varchar("document_type").notNull(), // DAO, plans, specifications, contract, etc.
+  uploadedById: varchar("uploaded_by_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   createdTenders: many(tenders, { relationName: "created_by" }),
@@ -118,6 +131,7 @@ export const tendersRelations = relations(tenders, ({ one, many }) => ({
   }),
   stepHistory: many(tenderStepHistory),
   comments: many(tenderComments),
+  documents: many(tenderDocuments),
 }));
 
 export const workflowStepsRelations = relations(workflowSteps, ({ many }) => ({
@@ -150,6 +164,17 @@ export const tenderCommentsRelations = relations(tenderComments, ({ one }) => ({
   }),
 }));
 
+export const tenderDocumentsRelations = relations(tenderDocuments, ({ one }) => ({
+  tender: one(tenders, {
+    fields: [tenderDocuments.tenderId],
+    references: [tenders.id],
+  }),
+  uploadedBy: one(users, {
+    fields: [tenderDocuments.uploadedById],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertTenderSchema = createInsertSchema(tenders).omit({
   id: true,
@@ -167,6 +192,11 @@ export const insertTenderStepHistorySchema = createInsertSchema(tenderStepHistor
 });
 
 export const insertTenderCommentSchema = createInsertSchema(tenderComments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTenderDocumentSchema = createInsertSchema(tenderDocuments).omit({
   id: true,
   createdAt: true,
 });
@@ -189,7 +219,9 @@ export type Tender = typeof tenders.$inferSelect;
 export type WorkflowStep = typeof workflowSteps.$inferSelect;
 export type TenderStepHistory = typeof tenderStepHistory.$inferSelect;
 export type TenderComment = typeof tenderComments.$inferSelect;
+export type TenderDocument = typeof tenderDocuments.$inferSelect;
 export type InsertTender = z.infer<typeof insertTenderSchema>;
 export type InsertWorkflowStep = z.infer<typeof insertWorkflowStepSchema>;
 export type InsertTenderStepHistory = z.infer<typeof insertTenderStepHistorySchema>;
 export type InsertTenderComment = z.infer<typeof insertTenderCommentSchema>;
+export type InsertTenderDocument = z.infer<typeof insertTenderDocumentSchema>;

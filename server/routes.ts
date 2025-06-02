@@ -6,9 +6,13 @@ import {
   insertTenderSchema, 
   insertTenderCommentSchema, 
   insertTenderStepHistorySchema, 
+  insertTenderDocumentSchema,
   upsertUserSchema 
 } from "@shared/schema";
 import { z } from "zod";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
