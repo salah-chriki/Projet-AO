@@ -159,11 +159,25 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserActivityCount(userId: string): Promise<number> {
-    const [result] = await db
+    // Check tender step history
+    const [historyResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(tenderStepHistory)
       .where(eq(tenderStepHistory.actorId, userId));
-    return result?.count || 0;
+    
+    // Check if user is current actor in any tender
+    const [tenderResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(tenders)
+      .where(eq(tenders.currentActorId, userId));
+    
+    // Check if user created any tenders
+    const [createdResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(tenders)
+      .where(eq(tenders.createdById, userId));
+    
+    return (historyResult?.count || 0) + (tenderResult?.count || 0) + (createdResult?.count || 0);
   }
 
   // Tender operations
