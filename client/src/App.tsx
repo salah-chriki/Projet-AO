@@ -11,6 +11,7 @@ import ActorDashboard from "@/pages/actor-dashboard";
 import TendersTable from "@/pages/tenders-table";
 import TenderDetail from "@/pages/tender-detail";
 import MyTaskTenderDetail from "@/pages/myTask-tender-detail";
+import CreateTender from "@/pages/create-tender";
 import Actors from "@/pages/actors";
 import Sidebar from "@/components/sidebar";
 
@@ -100,6 +101,16 @@ function Router() {
                 <Sidebar />
                 <div className="flex-1 overflow-hidden">
                   <MyTaskTenderDetail />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/create-tender">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <CreateTender />
                 </div>
               </div>
             )}

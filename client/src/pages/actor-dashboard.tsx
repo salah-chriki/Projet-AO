@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Clock, AlertTriangle, FileText, ArrowRight } from "lucide-react";
+import { Clock, AlertTriangle, FileText, ArrowRight, Plus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 import ActorBadge from "@/components/actor-badge";
@@ -75,6 +75,18 @@ export default function ActorDashboard() {
             <span className="text-slate-600">{user?.firstName} {user?.lastName}</span>
           </div>
         </div>
+        {/* Create button for ST */}
+        {user?.role === 'ST' && (
+          <div>
+            <Button
+              onClick={() => window.location.href = "/create-tender"}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Créer un appel d'offres
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Tasks Summary */}
