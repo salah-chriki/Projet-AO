@@ -68,7 +68,7 @@ export default function MyTaskTenderDetail() {
       queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/tenders/my-tasks"] });
       // Rediriger vers la page des tâches
-      window.location.href = "/mytasks";
+      window.location.href = "/";
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -102,7 +102,7 @@ export default function MyTaskTenderDetail() {
       queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/tenders/my-tasks"] });
       // Rediriger vers la page des tâches
-      window.location.href = "/mytasks";
+      window.location.href = "/";
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -196,7 +196,7 @@ export default function MyTaskTenderDetail() {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => window.location.href = "/mytasks"}
+              onClick={() => window.location.href = "/"}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Retour aux tâches
