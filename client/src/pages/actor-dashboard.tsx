@@ -206,13 +206,15 @@ export default function ActorDashboard() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Link href={`/myTask-tender-detail/${task.id}`}>
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                          <FileText className="w-4 h-4 mr-2" />
-                          Traiter
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </Button>
-                      </Link>
+                      <div className="flex space-x-2">
+                        <ApproveTaskDialog tender={task} />
+                        <Link href={`/myTask-tender-detail/${task.id}`}>
+                          <Button size="sm" variant="outline">
+                            <FileText className="w-4 h-4 mr-1" />
+                            Détails
+                          </Button>
+                        </Link>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

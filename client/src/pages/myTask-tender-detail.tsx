@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { ACTOR_ROLES } from "@/lib/constants";
+import { getWorkflowStepContent, getPhaseTitle } from "@/lib/workflowStepContent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -157,6 +158,12 @@ export default function MyTaskTenderDetail() {
     step.stepNumber === tender?.tender.currentStep
   );
 
+  // Get customized workflow step content
+  const stepContent = getWorkflowStepContent(
+    tender?.tender.currentPhase || 1, 
+    tender?.tender.currentStep || 1
+  );
+
   // Vérifier si l'utilisateur est l'acteur responsable de cette étape
   const isCurrentActor = user && tender?.currentActor && user.id === tender.currentActor.id;
 
@@ -249,6 +256,64 @@ export default function MyTaskTenderDetail() {
       </div>
 
       <div className="p-6 max-w-6xl mx-auto space-y-6">
+        {/* Workflow Step Instructions */}
+        {stepContent && (
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-blue-900">
+                <CheckCircle className="w-5 h-5 mr-2" />
+                {getPhaseTitle(tender.tender.currentPhase)} - Étape {tender.tender.currentStep}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-2">{stepContent.title}</h4>
+                <p className="text-blue-800 mb-3">{stepContent.description}</p>
+                <div className="bg-white p-4 rounded-lg border border-blue-200">
+                  <h5 className="font-medium text-slate-900 mb-2">Instructions :</h5>
+                  <p className="text-slate-700 mb-3">{stepContent.instructions}</p>
+                  {stepContent.expectedActions && stepContent.expectedActions.length > 0 && (
+                    <div className="mb-3">
+                      <h6 className="font-medium text-slate-900 mb-1">Actions attendues :</h6>
+                      <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
+                        {stepContent.expectedActions.map((action, index) => (
+                          <li key={index}>{action}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {stepContent.requiredDocuments && stepContent.requiredDocuments.length > 0 && (
+                    <div className="mb-3">
+                      <h6 className="font-medium text-slate-900 mb-1">Documents requis :</h6>
+                      <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
+                        {stepContent.requiredDocuments.map((doc, index) => (
+                          <li key={index}>{doc}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {stepContent.deliverables && stepContent.deliverables.length > 0 && (
+                    <div className="mb-3">
+                      <h6 className="font-medium text-slate-900 mb-1">Livrables attendus :</h6>
+                      <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
+                        {stepContent.deliverables.map((deliverable, index) => (
+                          <li key={index}>{deliverable}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {stepContent.estimatedDuration && (
+                    <div className="flex items-center text-sm text-slate-600">
+                      <Clock className="w-4 h-4 mr-1" />
+                      <span>Durée estimée : {stepContent.estimatedDuration}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Top Section - Informations générales et rapides */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left - Informations générales */}
