@@ -32,8 +32,8 @@ import { Input } from "@/components/ui/input";
 
 const approvalSchema = z.object({
   comments: z.string().optional(),
-  nextStepStartDate: z.string().min(1, "La date de début est obligatoire"),
-  nextStepEndDate: z.string().min(1, "La date de fin est obligatoire"),
+  nextStepStartDate: z.string().optional(),
+  nextStepEndDate: z.string().optional(),
 });
 
 type ApprovalFormData = z.infer<typeof approvalSchema>;
