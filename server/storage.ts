@@ -233,15 +233,29 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(tenders).orderBy(desc(tenders.createdAt));
   }
 
-  async getTendersByActor(actorId: string): Promise<Tender[]> {
-    return await db
-      .select()
+  async getTendersByActor(actorId: string): Promise<any[]> {
+    const result = await db
+      .select({
+        id: tenders.id,
+        reference: tenders.reference,
+        title: tenders.title,
+        amount: tenders.amount,
+        division: tenders.division,
+        direction: tenders.direction,
+        currentPhase: tenders.currentPhase,
+        currentStep: tenders.currentStep,
+        deadline: tenders.deadline,
+        status: tenders.status,
+        createdAt: tenders.createdAt
+      })
       .from(tenders)
       .where(and(
         eq(tenders.currentActorId, actorId),
         eq(tenders.status, "active")
       ))
       .orderBy(tenders.deadline);
+    
+    return result;
   }
 
   async updateTender(tenderId: string, updates: Partial<Tender>): Promise<Tender> {

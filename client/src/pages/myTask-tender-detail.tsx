@@ -25,8 +25,10 @@ import {
   XCircle, 
   FileText, 
   CalendarDays,
-  Euro
+  Euro,
+  Calendar
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const approvalSchema = z.object({
   comments: z.string().optional(),
@@ -536,6 +538,49 @@ export default function MyTaskTenderDetail() {
                       </FormItem>
                     )}
                   />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={approvalForm.control}
+                      name="nextStepStartDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center">
+                            <Calendar className="w-4 h-4 mr-1" />
+                            Date début prochaine étape
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              value={field.value || new Date().toISOString().split('T')[0]}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={approvalForm.control}
+                      name="nextStepEndDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center">
+                            <Calendar className="w-4 h-4 mr-1" />
+                            Date finalisation prochaine étape
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="date"
+                              {...field}
+                              value={field.value || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                   
                   <div className="flex gap-3">
                     <Button

@@ -1,10 +1,11 @@
 import { db } from "./db";
-import { tenders } from "@shared/schema";
+import { tenders, tenderStepHistory } from "@shared/schema";
 
 export async function createPhase1Step1Tenders() {
   console.log("Creating 10 tenders at Phase 1, Step 1 for different directions...");
   
-  // Clear existing data
+  // Clear existing data - first clear step history, then tenders
+  await db.delete(tenderStepHistory);
   await db.delete(tenders);
 
   // Create 10 tenders at Phase 1, Step 1 for different directions

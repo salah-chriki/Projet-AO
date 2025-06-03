@@ -164,6 +164,7 @@ export default function ActorDashboard() {
                 <TableRow>
                   <TableHead>Référence</TableHead>
                   <TableHead>Titre</TableHead>
+                  <TableHead>Direction</TableHead>
                   <TableHead>Division</TableHead>
                   <TableHead>Montant</TableHead>
                   <TableHead>Phase</TableHead>
@@ -183,9 +184,13 @@ export default function ActorDashboard() {
                       </div>
                     </TableCell>
                     <TableCell>
+                      <span className="text-sm font-medium text-slate-700">
+                        {task.direction || 'N/A'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
                       <DivisionBadge 
                         division={task.division} 
-                        department={task.department}
                         size="sm" 
                       />
                     </TableCell>
@@ -207,15 +212,12 @@ export default function ActorDashboard() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex space-x-2">
-                        <ApproveTaskDialog tender={task} />
-                        <Link href={`/myTask-tender-detail/${task.id}`}>
-                          <Button size="sm" variant="outline">
-                            <FileText className="w-4 h-4 mr-1" />
-                            Détails
-                          </Button>
-                        </Link>
-                      </div>
+                      <Link href={`/myTask-tender-detail/${task.id}`}>
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                          <FileText className="w-4 h-4 mr-1" />
+                          Traiter
+                        </Button>
+                      </Link>
                     </TableCell>
                   </TableRow>
                 ))}
