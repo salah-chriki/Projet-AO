@@ -28,3 +28,43 @@ export const DIVISIONS = {
 
 export type DirectionCode = keyof typeof DIRECTIONS;
 export type DivisionCode = keyof typeof DIVISIONS;
+
+// Division to Direction mapping based on organizational structure
+export const DIVISION_TO_DIRECTION: Record<DivisionCode, DirectionCode> = {
+  // DAF contains: DSI, DRHS, DF
+  DSI: 'DAF',
+  DRHS: 'DAF', 
+  DF: 'DAF',
+  
+  // DPPAV contains: DCSP, DSA, DPV
+  DCSP: 'DPPAV',
+  DSA: 'DPPAV',
+  DPV: 'DPPAV',
+  
+  // DCPA contains: DCPVOV, DPPA, DSSPAAA
+  DCPVOV: 'DCPA',
+  DPPA: 'DCPA',
+  DSSPAAA: 'DCPA',
+  
+  // DIL contains: DIC, DL, DPIV
+  DIC: 'DIL',
+  DL: 'DIL',
+  DPIV: 'DIL',
+  
+  // DERAJ contains: DERSP, DNQSPS, DR
+  DERSP: 'DERAJ',
+  DNQSPS: 'DERAJ',
+  DR: 'DERAJ'
+};
+
+// Helper function to get direction from division
+export function getDirectionFromDivision(division: DivisionCode): DirectionCode {
+  return DIVISION_TO_DIRECTION[division] || division as DirectionCode;
+}
+
+// Get divisions for a specific direction
+export function getDivisionsForDirection(direction: DirectionCode): DivisionCode[] {
+  return Object.entries(DIVISION_TO_DIRECTION)
+    .filter(([_, dir]) => dir === direction)
+    .map(([div, _]) => div as DivisionCode);
+}

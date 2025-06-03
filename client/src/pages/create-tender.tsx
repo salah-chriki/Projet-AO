@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { DIRECTIONS, DIVISIONS } from "@/lib/directions";
+import { DIRECTIONS, DIVISIONS, getDirectionFromDivision } from "@/lib/directions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -55,6 +55,16 @@ export default function CreateTender() {
       deadline: "",
     },
   });
+
+  // Watch division changes to auto-assign direction
+  const watchedDivision = form.watch("division");
+  
+  useEffect(() => {
+    if (watchedDivision) {
+      const autoDirection = getDirectionFromDivision(watchedDivision as any);
+      form.setValue("direction", autoDirection);
+    }
+  }, [watchedDivision, form]);
 
   const createMutation = useMutation({
     mutationFn: async (data: CreateTenderFormData) => {
@@ -276,9 +286,9 @@ export default function CreateTender() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.entries(DIRECTIONS).map(([code, name]) => (
+                            {Object.entries(DIRECTIONS).map(([code, info]) => (
                               <SelectItem key={code} value={code}>
-                                {name}
+                                {info.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
