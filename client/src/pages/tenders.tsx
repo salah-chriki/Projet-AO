@@ -111,13 +111,32 @@ export default function Tenders() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-slate-900">
-              {(user as any)?.role === "SM" ? "Contrôle des appels d'offres" : "Gestion des appels d'offres"}
+              {(() => {
+                const role = (user as any)?.role;
+                switch(role) {
+                  case "SM": return "Contrôle des appels d'offres";
+                  case "ST": return "Mes appels d'offres";
+                  case "CE": return "Évaluation des appels d'offres";
+                  case "SB": return "Approbation budgétaire";
+                  case "SOR": return "Ordonnancement";
+                  case "TP": return "Traitement des paiements";
+                  default: return "Gestion des appels d'offres";
+                }
+              })()}
             </h2>
             <p className="text-slate-600 mt-1">
-              {(user as any)?.role === "SM" 
-                ? "Appels d'offres nécessitant votre contrôle - Filtrez par direction et division"
-                : "Vue d'ensemble de tous les appels d'offres du système"
-              }
+              {(() => {
+                const role = (user as any)?.role;
+                switch(role) {
+                  case "SM": return "Appels d'offres nécessitant votre contrôle - Filtrez par direction et division";
+                  case "ST": return "Appels d'offres de votre division nécessitant votre intervention";
+                  case "CE": return "Appels d'offres de votre division en phase d'évaluation";
+                  case "SB": return "Appels d'offres de votre division nécessitant approbation budgétaire";
+                  case "SOR": return "Appels d'offres de votre division en attente d'ordonnancement";
+                  case "TP": return "Appels d'offres de votre division en traitement de paiement";
+                  default: return "Vue d'ensemble de tous les appels d'offres du système";
+                }
+              })()}
             </p>
           </div>
           <div className="flex items-center space-x-3">

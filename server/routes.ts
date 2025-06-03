@@ -99,28 +99,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Tender routes with filtering for SM actors
+  // Tender routes with role-based filtering
   app.get('/api/tenders', isAuthenticated, async (req: any, res) => {
     try {
       const { direction, division } = req.query;
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
       let tenders = await storage.getAllTenders();
       
-      // For SM actors, show only tenders requiring their control
-      if (req.session.userRole === 'SM') {
-        // SM actors see tenders that need verification or are in control phases
+      // Role-based filtering
+      if (user.role !== 'ADMIN') {
+        // For non-admin users, filter by division and control requirements
         tenders = tenders.filter((tender: any) => {
-          // Include tenders in steps that require SM control (most steps after initial submission)
-          return tender.currentStep >= 3; // SM controls from step 3 onwards
+          // Check if tender is in user's division
+          const sameDivision = tender.division === user.division;
+          
+          // Define which steps each role controls
+          const roleSteps = {
+            'ST': [1, 2], // Service Technique: Initial submission and preparation
+            'SM': [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], // Service Marchés: Most verification steps
+            'CE': [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], // Commission d'Évaluation: Evaluation phase
+            'SB': [45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], // Service Budget: Budget approval
+            'SOR': [55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71], // Service Ordonnateur: Final approval
+            'TP': [65, 66, 67, 68, 69, 70, 71] // Trésor Public: Payment processing
+          };
+          
+          const userSteps = roleSteps[user.role as keyof typeof roleSteps] || [];
+          const needsUserControl = userSteps.includes(tender.currentStep);
+          
+          return sameDivision && needsUserControl;
         });
         
-        // Apply direction filter
-        if (direction && direction !== 'all') {
-          tenders = tenders.filter((tender: any) => tender.direction === direction);
-        }
-        
-        // Apply division filter
-        if (division && division !== 'all') {
-          tenders = tenders.filter((tender: any) => tender.division === division);
+        // For SM actors, apply additional direction/division filters
+        if (user.role === 'SM') {
+          if (direction && direction !== 'all') {
+            tenders = tenders.filter((tender: any) => tender.direction === direction);
+          }
+          
+          if (division && division !== 'all') {
+            tenders = tenders.filter((tender: any) => tender.division === division);
+          }
         }
       }
       
