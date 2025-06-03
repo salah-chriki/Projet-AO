@@ -481,8 +481,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User management routes (admin or division admin)
-  app.get('/api/users', isAuthenticated, isAdminOrDivisionAdmin, async (req: any, res) => {
+  // User management routes (admin only for now)
+  app.get('/api/users', isAuthenticated, isAdmin, async (req: any, res) => {
     try {
       let users = await storage.getAllUsers();
       
