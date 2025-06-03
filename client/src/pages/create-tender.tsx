@@ -273,7 +273,17 @@ export default function CreateTender() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Division *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <Select 
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            // Auto-assign direction when division changes
+                            if (value) {
+                              const autoDirection = getDirectionFromDivision(value as keyof typeof DIVISIONS);
+                              form.setValue("direction", autoDirection);
+                            }
+                          }} 
+                          value={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Sélectionner" />
@@ -298,14 +308,23 @@ export default function CreateTender() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Direction *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select 
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            // Clear division when direction changes manually
+                            if (watchedDivision && getDirectionFromDivision(watchedDivision as keyof typeof DIVISIONS) !== value) {
+                              form.setValue("division", "");
+                            }
+                          }} 
+                          value={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Sélectionner une direction" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.entries(DIRECTIONS).map(([code, info]) => (
+                            {getFilteredDirections().map(([code, info]) => (
                               <SelectItem key={code} value={code}>
                                 {info.name}
                               </SelectItem>
