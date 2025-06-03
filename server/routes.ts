@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupSimpleAuth, isAuthenticated, isAdmin } from "./simpleAuth";
+import { setupSimpleAuth, isAuthenticated, isAdmin, isDivisionAdmin, isAdminOrDivisionAdmin } from "./simpleAuth";
 import bcrypt from "bcrypt";
 import { 
   insertTenderSchema, 
@@ -481,10 +481,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User management routes (admin only)
-  app.get('/api/users', isAuthenticated, isAdmin, async (req: any, res) => {
+  // User management routes (admin or division admin)
+  app.get('/api/users', isAuthenticated, isAdminOrDivisionAdmin, async (req: any, res) => {
     try {
-      const users = await storage.getAllUsers();
+      let users = await storage.getAllUsers();
+      
+      // If division admin, filter to only show users from their division/direction
+      if (req.userRole === 'DIVISION_ADMIN') {
+        users = users.filter((user: any) => 
+          user.division === req.userDivision || user.direction === req.userDirection
+        );
+      }
+      
       res.json(users);
     } catch (error) {
       console.error("Error fetching users:", error);

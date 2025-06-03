@@ -132,11 +132,53 @@ export const isAdmin: RequestHandler = async (req: any, res, next) => {
   
   try {
     const user = await storage.getUser(req.session.userId);
-    if (!user || !user.isAdmin) {
+    if (!user || (!user.isAdmin && user.role !== 'ADMIN')) {
       return res.status(403).json({ message: "Admin access required" });
     }
     next();
   } catch (error) {
     return res.status(403).json({ message: "Admin access required" });
+  }
+};
+
+export const isDivisionAdmin: RequestHandler = async (req: any, res, next) => {
+  if (!req.session?.userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  try {
+    const user = await storage.getUser(req.session.userId);
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'DIVISION_ADMIN' && !user.isAdmin)) {
+      return res.status(403).json({ message: "Division admin access required" });
+    }
+    
+    // Store user info for filtering
+    req.userDivision = user.division;
+    req.userDirection = user.direction;
+    req.userRole = user.role;
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: "Division admin access required" });
+  }
+};
+
+export const isAdminOrDivisionAdmin: RequestHandler = async (req: any, res, next) => {
+  if (!req.session?.userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  try {
+    const user = await storage.getUser(req.session.userId);
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'DIVISION_ADMIN' && !user.isAdmin)) {
+      return res.status(403).json({ message: "Admin or division admin access required" });
+    }
+    
+    // Store user info for filtering
+    req.userDivision = user.division;
+    req.userDirection = user.direction;
+    req.userRole = user.role;
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: "Admin or division admin access required" });
   }
 };
