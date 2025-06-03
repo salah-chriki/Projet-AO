@@ -48,6 +48,10 @@ export default function TaskItem({ tender, onApprove, onReject, onViewDetails }:
             <p className="text-sm text-slate-600 mb-3">
               <strong>Étape {tender.currentStep}:</strong> Action requise
             </p>
+            <div className="grid grid-cols-2 gap-2 text-sm text-slate-500 mb-2">
+              <span><strong>Direction:</strong> {tender.direction || "N/A"}</span>
+              <span><strong>Division:</strong> {tender.division || "N/A"}</span>
+            </div>
             <div className="flex items-center text-sm text-slate-500 space-x-4">
               <div className="flex items-center">
                 <Clock className="w-4 h-4 mr-1" />

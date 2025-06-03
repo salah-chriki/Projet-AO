@@ -270,6 +270,18 @@ export default function MyTaskTenderDetail() {
                     </p>
                   </div>
                   <div>
+                    <label className="text-sm font-medium text-slate-500">Direction</label>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {tender.tender.direction || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-500">Division</label>
+                    <p className="text-lg font-semibold text-slate-900">
+                      {tender.tender.division || "N/A"}
+                    </p>
+                  </div>
+                  <div>
                     <label className="text-sm font-medium text-slate-500">Phase actuelle</label>
                     <div className="mt-1">
                       <PhaseBadge phase={tender.tender.currentPhase as 1 | 2 | 3} />

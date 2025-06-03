@@ -37,6 +37,18 @@ export default function TenderCard({ tender, onViewDetails }: TenderCardProps) {
         
         <div className="space-y-2 mb-4">
           <div className="flex items-center justify-between text-sm">
+            <span className="text-slate-500">Direction:</span>
+            <span className="font-medium text-slate-900">
+              {tender.direction || "N/A"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-slate-500">Division:</span>
+            <span className="font-medium text-slate-900">
+              {tender.division || "N/A"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
             <span className="text-slate-500">Montant:</span>
             <span className="font-medium text-slate-900">
               {formatCurrency(tender.amount)}
