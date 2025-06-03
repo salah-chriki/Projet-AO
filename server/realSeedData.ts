@@ -1,6 +1,7 @@
 import { db } from "./db";
 import { tenders, tenderStepHistory } from "@shared/schema";
 import { eq } from "drizzle-orm";
+import { randomUUID } from "crypto";
 
 export async function seedRealTenders() {
   // Check if we already have real tenders
@@ -20,7 +21,7 @@ export async function seedRealTenders() {
   const realTenders = [
     // Phase 1 - Étape 1: Envoi du DAO (ST)
     {
-      id: "ao-2024-001",
+      id: randomUUID(),
       reference: "AO-2024-001",
       title: "Réhabilitation du réseau d'assainissement - Secteur Nord",
       description: "Travaux de réhabilitation et modernisation du réseau d'assainissement collectif dans le secteur Nord de la commune, incluant le remplacement de 2,5 km de canalisations et la réfection de 15 regards.",
@@ -36,7 +37,7 @@ export async function seedRealTenders() {
     },
     // Phase 1 - Étape 3: Revue par CE (CE)
     {
-      id: "ao-2024-002",
+      id: randomUUID(),
       reference: "AO-2024-002", 
       title: "Fourniture et installation d'équipements informatiques",
       description: "Acquisition de 50 postes de travail, 5 serveurs, équipements réseau et logiciels pour la modernisation du parc informatique municipal.",
@@ -183,13 +184,11 @@ export async function seedRealTenders() {
   // Insérer les appels d'offres
   for (const tender of realTenders) {
     await db.insert(tenders).values({
-      id: tender.id,
       reference: tender.reference,
       title: tender.title,
       description: tender.description,
       amount: tender.amount.toString(),
       division: tender.division,
-      department: tender.department,
       deadline: tender.deadline,
       currentPhase: tender.currentPhase,
       currentStep: tender.currentStep,
