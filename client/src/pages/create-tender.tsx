@@ -269,28 +269,25 @@ export default function CreateTender() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
-                    name="division"
+                    name="direction"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Division *</FormLabel>
+                        <FormLabel>Direction *</FormLabel>
                         <Select 
                           onValueChange={(value) => {
                             field.onChange(value);
-                            // Auto-assign direction when division changes
-                            if (value) {
-                              const autoDirection = getDirectionFromDivision(value as keyof typeof DIVISIONS);
-                              form.setValue("direction", autoDirection);
-                            }
+                            // Clear division when direction changes
+                            form.setValue("division", "");
                           }} 
                           value={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Sélectionner" />
+                              <SelectValue placeholder="Sélectionner une direction" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {getFilteredDivisions().map(([code, info]) => (
+                            {Object.entries(DIRECTIONS).map(([code, info]) => (
                               <SelectItem key={code} value={code}>
                                 {info.name}
                               </SelectItem>
@@ -304,27 +301,22 @@ export default function CreateTender() {
 
                   <FormField
                     control={form.control}
-                    name="direction"
+                    name="division"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Direction *</FormLabel>
+                        <FormLabel>Division *</FormLabel>
                         <Select 
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            // Clear division when direction changes manually
-                            if (watchedDivision && getDirectionFromDivision(watchedDivision as keyof typeof DIVISIONS) !== value) {
-                              form.setValue("division", "");
-                            }
-                          }} 
+                          onValueChange={field.onChange} 
                           value={field.value}
+                          disabled={!watchedDirection}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Sélectionner une direction" />
+                              <SelectValue placeholder={watchedDirection ? "Sélectionner une division" : "Choisir d'abord une direction"} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {getFilteredDirections().map(([code, info]) => (
+                            {getFilteredDivisions().map(([code, info]) => (
                               <SelectItem key={code} value={code}>
                                 {info.name}
                               </SelectItem>
