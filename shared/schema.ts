@@ -51,8 +51,8 @@ export const tenders = pgTable("tenders", {
   title: text("title").notNull(),
   description: text("description"),
   amount: decimal("amount", { precision: 15, scale: 2 }),
-  division: varchar("division"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
-  department: varchar("department"), // DSI, DRHS, DF, DCSP, DSA, DPV, etc.
+  direction: varchar("direction"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
+  division: varchar("division"), // DSI, DRHS, DF, DCSP, DSA, DPV, etc.
   currentPhase: integer("current_phase").default(1), // 1=Preparation, 2=Execution, 3=Payment
   currentStep: integer("current_step").default(1),
   currentActorId: varchar("current_actor_id").references(() => users.id),

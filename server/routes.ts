@@ -116,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user.role !== 'ADMIN') {
         // For non-admin users, filter by division and control requirements
         tenders = tenders.filter((tender: any) => {
-          // Check if tender is in user's division
+          // Check if tender is in user's division (using current schema)
           const sameDivision = tender.division === user.division;
           
           // Define which steps each role controls
