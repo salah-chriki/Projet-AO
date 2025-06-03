@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { DIRECTIONS, DIVISIONS, getDirectionFromDivision } from "@/lib/directions";
+import { DIRECTIONS, DIVISIONS, getDirectionFromDivision, getDivisionsForDirection } from "@/lib/directions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -56,8 +56,9 @@ export default function CreateTender() {
     },
   });
 
-  // Watch division changes to auto-assign direction
+  // Watch both division and direction changes for dynamic filtering
   const watchedDivision = form.watch("division");
+  const watchedDirection = form.watch("direction");
   
   useEffect(() => {
     if (watchedDivision) {
@@ -65,6 +66,22 @@ export default function CreateTender() {
       form.setValue("direction", autoDirection);
     }
   }, [watchedDivision, form]);
+
+  // Get filtered divisions based on selected direction
+  const getFilteredDivisions = () => {
+    if (!watchedDirection) return Object.entries(DIVISIONS);
+    return Object.entries(DIVISIONS).filter(([code]) => {
+      const divisionDirection = getDirectionFromDivision(code as keyof typeof DIVISIONS);
+      return divisionDirection === watchedDirection;
+    });
+  };
+
+  // Get filtered directions based on selected division
+  const getFilteredDirections = () => {
+    if (!watchedDivision) return Object.entries(DIRECTIONS);
+    const divisionDirection = getDirectionFromDivision(watchedDivision as keyof typeof DIVISIONS);
+    return Object.entries(DIRECTIONS).filter(([code]) => code === divisionDirection);
+  };
 
   const createMutation = useMutation({
     mutationFn: async (data: CreateTenderFormData) => {
@@ -256,14 +273,14 @@ export default function CreateTender() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Division *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Sélectionner" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.entries(DIVISIONS).map(([code, info]) => (
+                            {getFilteredDivisions().map(([code, info]) => (
                               <SelectItem key={code} value={code}>
                                 {info.name}
                               </SelectItem>
