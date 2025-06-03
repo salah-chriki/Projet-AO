@@ -241,6 +241,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Demo workflow endpoint
+  app.post('/api/demo/workflow', isAuthenticated, isAdmin, async (req: any, res) => {
+    try {
+      const { showCompleteWorkflow } = await import("./demoWorkflow");
+      const result = await showCompleteWorkflow();
+      res.json({ 
+        message: "Demo workflow completed successfully",
+        tender: result 
+      });
+    } catch (error) {
+      console.error("Error running demo workflow:", error);
+      res.status(500).json({ message: "Failed to run demo workflow" });
+    }
+  });
+
   // Helper function to auto-assign direction based on division
   function getDirectionFromDivision(division: string): string {
     const divisionToDirection: Record<string, string> = {
