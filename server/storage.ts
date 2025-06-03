@@ -536,11 +536,11 @@ export class DatabaseStorage implements IStorage {
 
     // Structure des directions et divisions basée sur la structure organisationnelle
     const directionsStructure = [
-      { direction: "DAF", divisions: ["DSI", "DRHS", "DF", "DCSP", "DSA"] },
-      { direction: "DPPAV", divisions: ["DPV", "DCPVOV", "DPPA", "DSSPAAA"] },
-      { direction: "DCPA", divisions: ["DIC", "DL"] },
-      { direction: "DIL", divisions: ["DPIV", "DERSP", "DNQSPS"] },
-      { direction: "DERAJ", divisions: ["DR"] },
+      { direction: "DAF", divisions: ["DSI", "DRHS", "DF"] },
+      { direction: "DPPAV", divisions: ["DCSP", "DSA", "DPV"] },
+      { direction: "DCPA", divisions: ["DCPVOV", "DPPA", "DSSPAAA"] },
+      { direction: "DIL", divisions: ["DIC", "DL", "DPIV"] },
+      { direction: "DERAJ", divisions: ["DERSP", "DNQSPS", "DR"] },
       { direction: "DCC", divisions: ["DCC"] },
       { direction: "DCGAI", divisions: ["DCGAI"] }
     ];
