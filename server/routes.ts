@@ -212,11 +212,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Helper function to auto-assign direction based on division
+  function getDirectionFromDivision(division: string): string {
+    const divisionToDirection: Record<string, string> = {
+      // DAF contains: DSI, DRHS, DF
+      'DSI': 'DAF',
+      'DRHS': 'DAF', 
+      'DF': 'DAF',
+      
+      // DPPAV contains: DCSP, DSA, DPV
+      'DCSP': 'DPPAV',
+      'DSA': 'DPPAV',
+      'DPV': 'DPPAV',
+      
+      // DCPA contains: DCPVOV, DPPA, DSSPAAA
+      'DCPVOV': 'DCPA',
+      'DPPA': 'DCPA',
+      'DSSPAAA': 'DCPA',
+      
+      // DIL contains: DIC, DL, DPIV
+      'DIC': 'DIL',
+      'DL': 'DIL',
+      'DPIV': 'DIL',
+      
+      // DERAJ contains: DERSP, DNQSPS, DR
+      'DERSP': 'DERAJ',
+      'DNQSPS': 'DERAJ',
+      'DR': 'DERAJ',
+      
+      // DCC and DCGAI are standalone
+      'DCC': 'DCC',
+      'DCGAI': 'DCGAI'
+    };
+    
+    return divisionToDirection[division] || division;
+  }
+
   // Create tender with documents
   app.post('/api/tenders', isAuthenticated, upload.array('documents', 10), async (req: any, res) => {
     try {
+      // Auto-assign direction based on division
+      const autoDirection = req.body.division ? getDirectionFromDivision(req.body.division) : req.body.direction;
+      
       const validatedData = insertTenderSchema.parse({
         ...req.body,
+        direction: autoDirection,
         deadline: req.body.deadline ? new Date(req.body.deadline) : undefined,
         createdById: req.session.userId,
         currentStep: 1,
@@ -648,7 +688,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           description: example.description,
           amount: example.budget.toString(),
           division: example.division,
-          department: example.department,
           currentPhase: example.phase,
           currentStep: example.currentStep,
           currentActorId: example.currentActorId,
