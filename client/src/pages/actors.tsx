@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,8 @@ import { apiRequest } from "@/lib/queryClient";
 import CreateActorDialog from "@/components/create-actor-dialog";
 import ActorBadge from "@/components/actor-badge";
 import { ACTOR_ROLES } from "@/lib/constants";
+import { useAuth } from "@/hooks/useAuth";
+import { isUnauthorizedError } from "@/lib/authUtils";
 
 export default function Actors() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,9 +42,26 @@ export default function Actors() {
   const [editingUser, setEditingUser] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      toast({
+        title: "Non autorisé",
+        description: "Vous devez être connecté. Redirection vers la connexion...",
+        variant: "destructive",
+      });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 500);
+      return;
+    }
+  }, [isAuthenticated, authLoading, toast]);
 
   const { data: users, isLoading } = useQuery({
     queryKey: ["/api/users"],
+    enabled: isAuthenticated,
   });
 
   const deleteUserMutation = useMutation({
@@ -56,7 +75,18 @@ export default function Actors() {
       });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
     },
-    onError: () => {
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Non autorisé",
+          description: "Vous êtes déconnecté. Redirection vers la connexion...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 500);
+        return;
+      }
       toast({
         title: "Erreur",
         description: "Impossible de supprimer l'utilisateur",
@@ -86,7 +116,7 @@ export default function Actors() {
     },
   });
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-6">
@@ -95,6 +125,10 @@ export default function Actors() {
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useEffect
   }
 
   const filteredUsers = (users || []).filter((user: any) => {

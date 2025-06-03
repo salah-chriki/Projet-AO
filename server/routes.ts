@@ -502,13 +502,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/users', isAuthenticated, isAdmin, async (req: any, res) => {
     try {
-      const { username, password, email, firstName, lastName, role } = req.body;
-      const adminUser = req.user;
+      const { username, password, email, firstName, lastName, role, division, direction } = req.body;
       
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
       
-      // Create user with simple approach
+      // Create user with all required fields
       const userId = `user_${Date.now()}`;
       const userData = {
         id: userId,
@@ -517,6 +516,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email,
         firstName,
         lastName,
+        role: role || 'ST', // Default to ST if no role provided
+        division,
+        direction,
+        isAdmin: role === 'ADMIN',
+        isActive: true,
       };
       
       await storage.createUser(userData);
