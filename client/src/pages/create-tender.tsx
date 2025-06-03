@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { DIVISIONS } from "@/lib/divisions";
+import { DIRECTIONS, DIVISIONS } from "@/lib/directions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -26,8 +26,8 @@ const createTenderSchema = z.object({
   title: z.string().min(1, "Le titre est obligatoire"),
   description: z.string().min(1, "La description est obligatoire"),
   amount: z.string().min(1, "Le montant est obligatoire"),
+  direction: z.string().min(1, "La direction est obligatoire"),
   division: z.string().min(1, "La division est obligatoire"),
-  department: z.string().min(1, "Le département est obligatoire"),
   deadline: z.string().min(1, "L'échéance est obligatoire"),
 });
 
@@ -50,8 +50,8 @@ export default function CreateTender() {
       title: "",
       description: "",
       amount: "",
+      direction: "",
       division: "",
-      department: "",
       deadline: "",
     },
   });
@@ -265,13 +265,24 @@ export default function CreateTender() {
 
                   <FormField
                     control={form.control}
-                    name="department"
+                    name="direction"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Département *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="INFRA, BATIMENTS..." {...field} />
-                        </FormControl>
+                        <FormLabel>Direction *</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner une direction" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Object.entries(DIRECTIONS).map(([code, name]) => (
+                              <SelectItem key={code} value={code}>
+                                {name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

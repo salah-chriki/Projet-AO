@@ -183,6 +183,8 @@ export default function TendersTable() {
                     <TableRow>
                       <TableHead>Référence</TableHead>
                       <TableHead>Titre</TableHead>
+                      <TableHead>Direction</TableHead>
+                      <TableHead>Division</TableHead>
                       <TableHead>Phase</TableHead>
                       <TableHead>Statut</TableHead>
                       <TableHead>Montant</TableHead>
@@ -206,6 +208,16 @@ export default function TendersTable() {
                               {tender.description}
                             </p>
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm font-medium text-slate-700">
+                            {tender.direction || "N/A"}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm font-medium text-slate-700">
+                            {tender.division || "N/A"}
+                          </span>
                         </TableCell>
                         <TableCell>
                           <PhaseBadge phase={tender.currentPhase as 1 | 2 | 3} size="sm" />
