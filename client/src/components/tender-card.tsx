@@ -54,6 +54,14 @@ export default function TenderCard({ tender, onViewDetails }: TenderCardProps) {
               {formatCurrency(tender.amount)}
             </span>
           </div>
+          {tender.prestataire && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-500">Prestataire:</span>
+              <span className="font-medium text-slate-900 text-right">
+                {tender.prestataire}
+              </span>
+            </div>
+          )}
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-500">Acteur actuel:</span>
             {tender.currentActor && (
