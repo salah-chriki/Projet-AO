@@ -47,6 +47,13 @@ export const ACTOR_ROLES = {
     color: "1f2937", // gray-800
     bgColor: "f9fafb", // gray-50
     textColor: "111827", // gray-900
+  },
+  DIVISION_ADMIN: {
+    code: "DIV",
+    name: "Admin Division",
+    color: "4338ca", // indigo-700
+    bgColor: "eef2ff", // indigo-50
+    textColor: "3730a3", // indigo-800
   }
 } as const;
 

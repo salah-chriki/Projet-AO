@@ -59,7 +59,7 @@ export default function Actors() {
     }
   }, [isAuthenticated, authLoading, toast]);
 
-  const { data: users, isLoading } = useQuery({
+  const { data: users = [], isLoading, error } = useQuery({
     queryKey: ["/api/users"],
     enabled: isAuthenticated,
   });
@@ -131,7 +131,7 @@ export default function Actors() {
     return null; // Will be redirected by useEffect
   }
 
-  const filteredUsers = (users || []).filter((user: any) => {
+  const filteredUsers = Array.isArray(users) ? users.filter((user: any) => {
     const matchesSearch = 
       user.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -140,17 +140,19 @@ export default function Actors() {
     const matchesRole = roleFilter === "all" || user.role === roleFilter;
     
     return matchesSearch && matchesRole;
-  });
+  }) : [];
 
   const getRoleStats = () => {
     const stats: Record<string, number> = {};
     Object.keys(ACTOR_ROLES).forEach(role => stats[role] = 0);
     
-    users?.forEach((user: any) => {
-      if (stats[user.role] !== undefined) {
-        stats[user.role]++;
-      }
-    });
+    if (Array.isArray(users)) {
+      users.forEach((user: any) => {
+        if (stats[user.role] !== undefined) {
+          stats[user.role]++;
+        }
+      });
+    }
     
     return stats;
   };
@@ -250,16 +252,19 @@ export default function Actors() {
               <TableBody>
                 {filteredUsers.map((user: any) => {
                   const role = ACTOR_ROLES[user.role as keyof typeof ACTOR_ROLES];
+                  const roleColor = role?.color || "6b7280"; // Default gray color
+                  const roleName = role?.name || user.role;
+                  
                   return (
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center">
                           <div 
                             className="w-8 h-8 rounded-full flex items-center justify-center mr-3"
-                            style={{ backgroundColor: `#${role.color}` }}
+                            style={{ backgroundColor: `#${roleColor}` }}
                           >
                             <span className="text-white text-sm font-bold">
-                              {getInitials(user.firstName, user.lastName)}
+                              {getInitials(user.firstName || "", user.lastName || "")}
                             </span>
                           </div>
                           <div>
@@ -267,13 +272,19 @@ export default function Actors() {
                               {user.firstName} {user.lastName}
                             </div>
                             <div className="text-sm text-slate-500">
-                              {user.isAdmin ? "Administrateur" : role.name}
+                              {user.isAdmin ? "Administrateur" : roleName}
                             </div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <ActorBadge role={user.role as keyof typeof ACTOR_ROLES} />
+                        {role ? (
+                          <ActorBadge role={user.role as keyof typeof ACTOR_ROLES} />
+                        ) : (
+                          <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
+                            {user.role || "N/A"}
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="text-slate-900">{user.email || "N/A"}</div>
