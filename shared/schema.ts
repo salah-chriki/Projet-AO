@@ -51,6 +51,7 @@ export const tenders = pgTable("tenders", {
   title: text("title").notNull(),
   description: text("description"),
   amount: decimal("amount", { precision: 15, scale: 2 }),
+  prestataire: text("prestataire"), // Contractor/Service provider name
   direction: varchar("direction"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
   division: varchar("division"), // DSI, DRHS, DF, DCSP, DSA, DPV, etc.
   currentPhase: integer("current_phase").default(1), // 1=Preparation, 2=Execution, 3=Payment

@@ -26,6 +26,7 @@ const createTenderSchema = z.object({
   title: z.string().min(1, "Le titre est obligatoire"),
   description: z.string().min(1, "La description est obligatoire"),
   amount: z.string().min(1, "Le montant est obligatoire"),
+  prestataire: z.string().optional(),
   direction: z.string().min(1, "La direction est obligatoire"),
   division: z.string().min(1, "La division est obligatoire"),
   deadline: z.string().min(1, "L'échéance est obligatoire"),
@@ -50,6 +51,7 @@ export default function CreateTender() {
       title: "",
       description: "",
       amount: "",
+      prestataire: "",
       direction: "",
       division: "",
       deadline: "",
@@ -239,6 +241,23 @@ export default function CreateTender() {
                         <Textarea 
                           placeholder="Description complète des travaux, prestations ou fournitures..."
                           rows={5}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="prestataire"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Prestataire</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Nom de l'entreprise ou du prestataire..."
                           {...field}
                         />
                       </FormControl>
