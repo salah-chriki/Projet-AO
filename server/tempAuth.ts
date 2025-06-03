@@ -168,7 +168,6 @@ async function initializeDemoUsers() {
       email: "admin@example.fr",
       role: "ADMIN" as const,
       division: "DCC",
-      department: "DCC",
       isAdmin: true,
     },
     {
@@ -177,8 +176,7 @@ async function initializeDemoUsers() {
       lastName: "Technique",
       email: "marie.technique@example.fr",
       role: "ST" as const,
-      division: "DAF",
-      department: "DSI",
+      division: "DSI",
       isAdmin: false,
     },
     {
@@ -187,8 +185,7 @@ async function initializeDemoUsers() {
       lastName: "Marchés",
       email: "pierre.marches@example.fr",
       role: "SM" as const,
-      division: "DPPAV",
-      department: "DCSP",
+      division: "DCSP",
       isAdmin: false,
     },
     {
@@ -198,7 +195,6 @@ async function initializeDemoUsers() {
       email: "sophie.controle@example.fr",
       role: "CE" as const,
       division: "DCC",
-      department: "DCC",
       isAdmin: false,
     },
     {
@@ -207,8 +203,7 @@ async function initializeDemoUsers() {
       lastName: "Budget",
       email: "marc.budget@example.fr",
       role: "SB" as const,
-      division: "DAF",
-      department: "DF",
+      division: "DF",
       isAdmin: false,
     },
     {
@@ -218,7 +213,6 @@ async function initializeDemoUsers() {
       email: "lucie.ordonnancement@example.fr",
       role: "SOR" as const,
       division: "DCGAI",
-      department: "DCGAI",
       isAdmin: false,
     },
     {
@@ -227,8 +221,7 @@ async function initializeDemoUsers() {
       lastName: "Trésorier",
       email: "paul.tresorier@example.fr",
       role: "TP" as const,
-      division: "DAF",
-      department: "DF",
+      division: "DF",
       isAdmin: false,
     },
   ];
