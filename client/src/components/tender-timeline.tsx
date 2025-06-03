@@ -139,10 +139,25 @@ export default function TenderTimeline({ tenderId }: TenderTimelineProps) {
                             "{entry.comments}"
                           </p>
                         )}
-                        <div className="flex items-center space-x-3 text-sm text-slate-500">
-                          <span>{formatDate(entry.createdAt)}</span>
-                          {entry.completedAt && (
-                            <span>• Complété le {formatDate(entry.completedAt)}</span>
+                        <div className="space-y-1 text-sm text-slate-500">
+                          <div className="flex items-center space-x-3">
+                            <span>Créé le {formatDate(entry.createdAt)}</span>
+                            {entry.completedAt && (
+                              <span>• Complété le {formatDate(entry.completedAt)}</span>
+                            )}
+                          </div>
+                          {entry.dateDebut && (
+                            <div className="flex items-center space-x-3">
+                              <span className="text-blue-600">Date début: {formatDate(entry.dateDebut)}</span>
+                              {entry.dateFinalisation && (
+                                <span className="text-green-600">• Date finalisation: {formatDate(entry.dateFinalisation)}</span>
+                              )}
+                            </div>
+                          )}
+                          {entry.deadline && (
+                            <div className="text-orange-600">
+                              Échéance: {formatDate(entry.deadline)}
+                            </div>
                           )}
                         </div>
                       </div>

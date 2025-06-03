@@ -367,13 +367,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
       }
 
-      // Record approval in history
+      // Record approval in history with timing information
       await storage.createStepHistory({
         tenderId,
         stepId: currentStepInfo?.id,
         actorId: userId,
         action: "approved",
         comments,
+        dateFinalisation: new Date(), // Current step completion date
         completedAt: new Date(),
       });
 
@@ -393,6 +394,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           stepDeadline,
           nextStep.phase !== tender.currentPhase ? nextStep.phase : undefined
         );
+
+        // Create step history entry for the new actor receiving the task
+        await storage.createStepHistory({
+          tenderId,
+          stepId: nextStep.id,
+          actorId: nextActorId,
+          action: "pending",
+          dateDebut: nextStepStartDate ? new Date(nextStepStartDate) : new Date(), // Task start date
+          deadline: stepDeadline,
+        });
 
         console.log(`Tender ${tenderId} moved to step ${nextStep.stepNumber} (${nextStep.title}) assigned to ${nextActorId}`);
       } else {

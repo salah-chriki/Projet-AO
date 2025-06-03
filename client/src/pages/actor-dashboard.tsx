@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import ActorBadge from "@/components/actor-badge";
 import DivisionBadge from "@/components/division-badge";
 import PhaseBadge from "@/components/phase-badge";
+import ApproveTaskDialog from "@/components/approve-task-dialog";
 import { ACTOR_ROLES } from "@/lib/constants";
 
 export default function ActorDashboard() {
