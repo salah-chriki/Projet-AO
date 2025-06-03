@@ -534,14 +534,14 @@ export class DatabaseStorage implements IStorage {
       .from(tenders)
       .groupBy(tenders.division, tenders.status, tenders.currentStep, tenders.currentPhase);
 
-    // Structure des directions et divisions basée sur la structure française
+    // Structure des directions et divisions basée sur la structure organisationnelle
     const directionsStructure = [
-      { direction: "DSI", divisions: ["DSI", "DRHS"] },
-      { direction: "DAF", divisions: ["DF", "DCSP", "DSA"] },
-      { direction: "DPPAV", divisions: ["DPV", "DCPGOV", "DPPA", "DSSMAA"] },
-      { direction: "DCDA", divisions: ["DIC", "DT"] },
-      { direction: "DIL", divisions: ["DPRV", "DERSP", "DERAI"] },
-      { direction: "DERAI", divisions: ["DR", "DCC"] },
+      { direction: "DAF", divisions: ["DSI", "DRHS", "DF", "DCSP", "DSA"] },
+      { direction: "DPPAV", divisions: ["DPV", "DCPVOV", "DPPA", "DSSPAAA"] },
+      { direction: "DCPA", divisions: ["DIC", "DL"] },
+      { direction: "DIL", divisions: ["DPIV", "DERSP", "DNQSPS"] },
+      { direction: "DERAJ", divisions: ["DR"] },
+      { direction: "DCC", divisions: ["DCC"] },
       { direction: "DCGAI", divisions: ["DCGAI"] }
     ];
 
