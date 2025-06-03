@@ -30,7 +30,16 @@ export default function Tenders() {
   const { user } = useAuth();
 
   const { data: tenders, isLoading } = useQuery({
-    queryKey: ["/api/tenders"],
+    queryKey: ["/api/tenders", { direction: directionFilter, division: divisionFilter }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (directionFilter !== "all") params.append("direction", directionFilter);
+      if (divisionFilter !== "all") params.append("division", divisionFilter);
+      
+      const response = await fetch(`/api/tenders?${params.toString()}`);
+      if (!response.ok) throw new Error("Failed to fetch tenders");
+      return response.json();
+    },
   });
 
   // Get available divisions for selected direction
@@ -71,25 +80,25 @@ export default function Tenders() {
     );
   }
 
-  const filteredTenders = (tenders || []).filter((tender: any) => {
+  const filteredTenders = Array.isArray(tenders) ? tenders.filter((tender: any) => {
     const matchesSearch = 
-      tender.reference.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tender.title.toLowerCase().includes(searchQuery.toLowerCase());
+      tender.reference?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tender.title?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesPhase = phaseFilter === "all" || tender.currentPhase.toString() === phaseFilter;
+    const matchesPhase = phaseFilter === "all" || tender.currentPhase?.toString() === phaseFilter;
     
-    const matchesDirection = directionFilter === "all" || tender.direction === directionFilter;
-    
-    const matchesDivision = divisionFilter === "all" || tender.division === divisionFilter;
-    
-    return matchesSearch && matchesPhase && matchesDirection && matchesDivision;
-  });
+    return matchesSearch && matchesPhase;
+  }) : [];
 
   const getPhaseStats = () => {
-    const stats = { all: tenders?.length || 0, "1": 0, "2": 0, "3": 0 };
-    tenders?.forEach((tender: any) => {
-      stats[tender.currentPhase as keyof typeof stats]++;
-    });
+    const stats = { all: Array.isArray(tenders) ? tenders.length : 0, "1": 0, "2": 0, "3": 0 };
+    if (Array.isArray(tenders)) {
+      tenders.forEach((tender: any) => {
+        if (tender.currentPhase && stats[tender.currentPhase as keyof typeof stats] !== undefined) {
+          stats[tender.currentPhase as keyof typeof stats]++;
+        }
+      });
+    }
     return stats;
   };
 
@@ -102,10 +111,10 @@ export default function Tenders() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-slate-900">
-              {user?.role === "SM" ? "Contrôle des appels d'offres" : "Gestion des appels d'offres"}
+              {(user as any)?.role === "SM" ? "Contrôle des appels d'offres" : "Gestion des appels d'offres"}
             </h2>
             <p className="text-slate-600 mt-1">
-              {user?.role === "SM" 
+              {(user as any)?.role === "SM" 
                 ? "Appels d'offres nécessitant votre contrôle - Filtrez par direction et division"
                 : "Vue d'ensemble de tous les appels d'offres du système"
               }
@@ -135,7 +144,7 @@ export default function Tenders() {
             </Select>
 
             {/* Direction and Division filters for SM actors */}
-            {user?.role === "SM" && (
+            {(user as any)?.role === "SM" && (
               <>
                 <Select value={directionFilter} onValueChange={handleDirectionChange}>
                   <SelectTrigger className="w-48">

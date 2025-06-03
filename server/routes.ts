@@ -99,10 +99,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Tender routes
-  app.get('/api/tenders', isAuthenticated, async (req, res) => {
+  // Tender routes with filtering for SM actors
+  app.get('/api/tenders', isAuthenticated, async (req: any, res) => {
     try {
-      const tenders = await storage.getAllTenders();
+      const { direction, division } = req.query;
+      let tenders = await storage.getAllTenders();
+      
+      // For SM actors, show only tenders requiring their control
+      if (req.session.userRole === 'SM') {
+        // SM actors see tenders that need verification or are in control phases
+        tenders = tenders.filter((tender: any) => {
+          // Include tenders in steps that require SM control (most steps after initial submission)
+          return tender.currentStep >= 3; // SM controls from step 3 onwards
+        });
+        
+        // Apply direction filter
+        if (direction && direction !== 'all') {
+          tenders = tenders.filter((tender: any) => tender.direction === direction);
+        }
+        
+        // Apply division filter
+        if (division && division !== 'all') {
+          tenders = tenders.filter((tender: any) => tender.division === division);
+        }
+      }
+      
       res.json(tenders);
     } catch (error) {
       console.error("Error fetching tenders:", error);
