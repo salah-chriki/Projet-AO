@@ -65,8 +65,9 @@ export default function ActorDashboard() {
   const roleTitle = typeof roleInfo === 'object' ? roleInfo.name : (roleInfo || user?.role || 'Utilisateur');
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
+    <div className="h-full overflow-y-auto">
+      <div className="p-6 space-y-6">
+        {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Tableau de Bord</h1>
@@ -223,6 +224,7 @@ export default function ActorDashboard() {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
