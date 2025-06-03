@@ -12,20 +12,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Eye, Calendar, DollarSign } from "lucide-react";
+import { Search, Eye, Calendar, DollarSign, Filter } from "lucide-react";
 import CreateTenderDialog from "@/components/create-tender-dialog";
 import PhaseBadge from "@/components/phase-badge";
 import ActorBadge from "@/components/actor-badge";
+import TenderCard from "@/components/tender-card";
 import { useLocation } from "wouter";
 import { ACTOR_ROLES } from "@/lib/constants";
+import { useAuth } from "@/hooks/useAuth";
+import { DIRECTIONS } from "@/lib/directions";
 
 export default function Tenders() {
   const [searchQuery, setSearchQuery] = useState("");
   const [phaseFilter, setPhaseFilter] = useState("all");
+  const [directionFilter, setDirectionFilter] = useState("all");
+  const [divisionFilter, setDivisionFilter] = useState("all");
+  const { user } = useAuth();
 
   const { data: tenders, isLoading } = useQuery({
     queryKey: ["/api/tenders"],
   });
+
+  // Get available divisions for selected direction
+  const getAvailableDivisions = () => {
+    if (directionFilter === "all") return [];
+    
+    const directionStructure = {
+      "DAF": ["DSI", "DRHS", "DF"],
+      "DPPAV": ["DCSP", "DSA", "DPV"],
+      "DCPA": ["DCPVOV", "DPPA", "DSSPAAA"],
+      "DIL": ["DIC", "DL", "DPIV"],
+      "DERAJ": ["DERSP", "DNQSPS", "DR"],
+      "DCC": ["DCC"],
+      "DCGAI": ["DCGAI"]
+    };
+    
+    return directionStructure[directionFilter as keyof typeof directionStructure] || [];
+  };
+
+  // Reset division filter when direction changes
+  const handleDirectionChange = (value: string) => {
+    setDirectionFilter(value);
+    setDivisionFilter("all");
+  };
 
   if (isLoading) {
     return (
@@ -49,7 +78,11 @@ export default function Tenders() {
     
     const matchesPhase = phaseFilter === "all" || tender.currentPhase.toString() === phaseFilter;
     
-    return matchesSearch && matchesPhase;
+    const matchesDirection = directionFilter === "all" || tender.direction === directionFilter;
+    
+    const matchesDivision = divisionFilter === "all" || tender.division === divisionFilter;
+    
+    return matchesSearch && matchesPhase && matchesDirection && matchesDivision;
   });
 
   const getPhaseStats = () => {
@@ -68,8 +101,15 @@ export default function Tenders() {
       <div className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">Gestion des appels d'offres</h2>
-            <p className="text-slate-600 mt-1">Vue d'ensemble de tous les appels d'offres du système</p>
+            <h2 className="text-2xl font-bold text-slate-900">
+              {user?.role === "SM" ? "Contrôle des appels d'offres" : "Gestion des appels d'offres"}
+            </h2>
+            <p className="text-slate-600 mt-1">
+              {user?.role === "SM" 
+                ? "Appels d'offres nécessitant votre contrôle - Filtrez par direction et division"
+                : "Vue d'ensemble de tous les appels d'offres du système"
+              }
+            </p>
           </div>
           <div className="flex items-center space-x-3">
             <div className="relative">
@@ -93,6 +133,46 @@ export default function Tenders() {
                 <SelectItem value="3">Phase 3: Paiements</SelectItem>
               </SelectContent>
             </Select>
+
+            {/* Direction and Division filters for SM actors */}
+            {user?.role === "SM" && (
+              <>
+                <Select value={directionFilter} onValueChange={handleDirectionChange}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Toutes les directions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes les directions</SelectItem>
+                    <SelectItem value="DAF">DAF</SelectItem>
+                    <SelectItem value="DPPAV">DPPAV</SelectItem>
+                    <SelectItem value="DCPA">DCPA</SelectItem>
+                    <SelectItem value="DIL">DIL</SelectItem>
+                    <SelectItem value="DERAJ">DERAJ</SelectItem>
+                    <SelectItem value="DCC">DCC</SelectItem>
+                    <SelectItem value="DCGAI">DCGAI</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select 
+                  value={divisionFilter} 
+                  onValueChange={setDivisionFilter}
+                  disabled={directionFilter === "all"}
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Toutes les divisions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes les divisions</SelectItem>
+                    {getAvailableDivisions().map((division) => (
+                      <SelectItem key={division} value={division}>
+                        {division}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
+            )}
+
             <CreateTenderDialog />
           </div>
         </div>
