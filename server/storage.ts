@@ -42,6 +42,7 @@ export interface IStorage {
   getTenderWithDetails(id: string): Promise<any>;
   getAllTenders(): Promise<Tender[]>;
   getTendersByActor(actorId: string): Promise<Tender[]>;
+  updateTender(tenderId: string, updates: Partial<Tender>): Promise<Tender>;
   updateTenderStep(tenderId: string, stepNumber: number, actorId: string, deadline?: Date): Promise<Tender>;
   updateTenderStatus(tenderId: string, status: string): Promise<Tender>;
 
@@ -241,6 +242,18 @@ export class DatabaseStorage implements IStorage {
         eq(tenders.status, "active")
       ))
       .orderBy(tenders.deadline);
+  }
+
+  async updateTender(tenderId: string, updates: Partial<Tender>): Promise<Tender> {
+    const [tender] = await db
+      .update(tenders)
+      .set({ 
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(tenders.id, tenderId))
+      .returning();
+    return tender;
   }
 
   async updateTenderStep(tenderId: string, stepNumber: number, actorId: string, deadline?: Date, phase?: number): Promise<Tender> {

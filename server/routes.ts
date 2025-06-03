@@ -212,6 +212,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update tender information (including prestataire) during workflow
+  app.put('/api/tenders/:id/update', isAuthenticated, async (req: any, res) => {
+    try {
+      const tenderId = req.params.id;
+      const { prestataire, title, description, amount } = req.body;
+      
+      // Get current tender
+      const tender = await storage.getTender(tenderId);
+      if (!tender) {
+        return res.status(404).json({ message: "Tender not found" });
+      }
+      
+      // Update tender with new information
+      const updateData: any = {};
+      if (prestataire !== undefined) updateData.prestataire = prestataire;
+      if (title !== undefined) updateData.title = title;
+      if (description !== undefined) updateData.description = description;
+      if (amount !== undefined) updateData.amount = amount;
+      
+      // Update the tender
+      await storage.updateTender(tenderId, updateData);
+      
+      res.json({ message: "Tender updated successfully" });
+    } catch (error) {
+      console.error("Error updating tender:", error);
+      res.status(500).json({ message: "Failed to update tender" });
+    }
+  });
+
   // Helper function to auto-assign direction based on division
   function getDirectionFromDivision(division: string): string {
     const divisionToDirection: Record<string, string> = {
