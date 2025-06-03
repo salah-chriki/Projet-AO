@@ -85,7 +85,9 @@ export const tenderStepHistory = pgTable("tender_step_history", {
   actorId: varchar("actor_id").references(() => users.id),
   action: varchar("action").notNull(), // approved, rejected, completed, pending
   comments: text("comments"),
-  deadline: timestamp("deadline"),
+  dateDebut: timestamp("date_debut"), // Start date when actor receives the task
+  dateFinalisation: timestamp("date_finalisation"), // End date when actor completes the task
+  deadline: timestamp("deadline"), // Expected completion deadline
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
