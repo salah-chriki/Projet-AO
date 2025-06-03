@@ -49,9 +49,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { initializeRealWorkflowSteps } = await import("./realWorkflowSteps");
   await initializeRealWorkflowSteps();
 
-  // Seed real tender data
-  const { seedRealTenders } = await import("./realSeedData");
-  await seedRealTenders();
+  // Create Phase 1 Step 1 tenders for all directions
+  const { createPhase1Step1Tenders } = await import("./newTenderData");
+  await createPhase1Step1Tenders();
 
   // Auth routes are handled by setupSimpleAuth
 
