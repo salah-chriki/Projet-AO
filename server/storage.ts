@@ -5,6 +5,11 @@ import {
   tenderStepHistory,
   tenderComments,
   tenderDocuments,
+  contracts,
+  invoices,
+  orders,
+  receptions,
+  payments,
   type User,
   type InsertUser,
   type UpsertUser,
@@ -13,11 +18,21 @@ import {
   type TenderStepHistory,
   type TenderComment,
   type TenderDocument,
+  type Contract,
+  type Invoice,
+  type Order,
+  type Reception,
+  type Payment,
   type InsertTender,
   type InsertWorkflowStep,
   type InsertTenderStepHistory,
   type InsertTenderComment,
   type InsertTenderDocument,
+  type InsertContract,
+  type InsertInvoice,
+  type InsertOrder,
+  type InsertReception,
+  type InsertPayment,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, sql, asc } from "drizzle-orm";
@@ -62,6 +77,41 @@ export interface IStorage {
   // Document operations
   createTenderDocument(document: InsertTenderDocument): Promise<TenderDocument>;
   getTenderDocuments(tenderId: string): Promise<TenderDocument[]>;
+
+  // Contract operations
+  createContract(contract: InsertContract): Promise<Contract>;
+  getContract(id: string): Promise<Contract | undefined>;
+  getContractsByTender(tenderId: string): Promise<Contract[]>;
+  updateContract(contractId: string, updates: Partial<Contract>): Promise<Contract>;
+  getAllContracts(): Promise<Contract[]>;
+
+  // Invoice operations
+  createInvoice(invoice: InsertInvoice): Promise<Invoice>;
+  getInvoice(id: string): Promise<Invoice | undefined>;
+  getInvoicesByContract(contractId: string): Promise<Invoice[]>;
+  updateInvoice(invoiceId: string, updates: Partial<Invoice>): Promise<Invoice>;
+  getAllInvoices(): Promise<Invoice[]>;
+
+  // Order operations
+  createOrder(order: InsertOrder): Promise<Order>;
+  getOrder(id: string): Promise<Order | undefined>;
+  getOrdersByContract(contractId: string): Promise<Order[]>;
+  updateOrder(orderId: string, updates: Partial<Order>): Promise<Order>;
+  getAllOrders(): Promise<Order[]>;
+
+  // Reception operations
+  createReception(reception: InsertReception): Promise<Reception>;
+  getReception(id: string): Promise<Reception | undefined>;
+  getReceptionsByContract(contractId: string): Promise<Reception[]>;
+  updateReception(receptionId: string, updates: Partial<Reception>): Promise<Reception>;
+  getAllReceptions(): Promise<Reception[]>;
+
+  // Payment operations
+  createPayment(payment: InsertPayment): Promise<Payment>;
+  getPayment(id: string): Promise<Payment | undefined>;
+  getPaymentsByInvoice(invoiceId: string): Promise<Payment[]>;
+  updatePayment(paymentId: string, updates: Partial<Payment>): Promise<Payment>;
+  getAllPayments(): Promise<Payment[]>;
 
   // Dashboard statistics
   getDashboardStats(): Promise<any>;
@@ -611,6 +661,196 @@ export class DatabaseStorage implements IStorage {
     });
 
     return directionDetails;
+  }
+
+  // Contract operations
+  async createContract(contract: InsertContract): Promise<Contract> {
+    const [newContract] = await db
+      .insert(contracts)
+      .values(contract)
+      .returning();
+    return newContract;
+  }
+
+  async getContract(id: string): Promise<Contract | undefined> {
+    const [contract] = await db.select().from(contracts).where(eq(contracts.id, id));
+    return contract;
+  }
+
+  async getContractsByTender(tenderId: string): Promise<Contract[]> {
+    return await db
+      .select()
+      .from(contracts)
+      .where(eq(contracts.tenderId, tenderId))
+      .orderBy(desc(contracts.createdAt));
+  }
+
+  async updateContract(contractId: string, updates: Partial<Contract>): Promise<Contract> {
+    const [updatedContract] = await db
+      .update(contracts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(contracts.id, contractId))
+      .returning();
+    return updatedContract;
+  }
+
+  async getAllContracts(): Promise<Contract[]> {
+    return await db
+      .select()
+      .from(contracts)
+      .orderBy(desc(contracts.createdAt));
+  }
+
+  // Invoice operations
+  async createInvoice(invoice: InsertInvoice): Promise<Invoice> {
+    const [newInvoice] = await db
+      .insert(invoices)
+      .values(invoice)
+      .returning();
+    return newInvoice;
+  }
+
+  async getInvoice(id: string): Promise<Invoice | undefined> {
+    const [invoice] = await db.select().from(invoices).where(eq(invoices.id, id));
+    return invoice;
+  }
+
+  async getInvoicesByContract(contractId: string): Promise<Invoice[]> {
+    return await db
+      .select()
+      .from(invoices)
+      .where(eq(invoices.contractId, contractId))
+      .orderBy(desc(invoices.createdAt));
+  }
+
+  async updateInvoice(invoiceId: string, updates: Partial<Invoice>): Promise<Invoice> {
+    const [updatedInvoice] = await db
+      .update(invoices)
+      .set(updates)
+      .where(eq(invoices.id, invoiceId))
+      .returning();
+    return updatedInvoice;
+  }
+
+  async getAllInvoices(): Promise<Invoice[]> {
+    return await db
+      .select()
+      .from(invoices)
+      .orderBy(desc(invoices.createdAt));
+  }
+
+  // Order operations
+  async createOrder(order: InsertOrder): Promise<Order> {
+    const [newOrder] = await db
+      .insert(orders)
+      .values(order)
+      .returning();
+    return newOrder;
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order;
+  }
+
+  async getOrdersByContract(contractId: string): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.contractId, contractId))
+      .orderBy(desc(orders.createdAt));
+  }
+
+  async updateOrder(orderId: string, updates: Partial<Order>): Promise<Order> {
+    const [updatedOrder] = await db
+      .update(orders)
+      .set(updates)
+      .where(eq(orders.id, orderId))
+      .returning();
+    return updatedOrder;
+  }
+
+  async getAllOrders(): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .orderBy(desc(orders.createdAt));
+  }
+
+  // Reception operations
+  async createReception(reception: InsertReception): Promise<Reception> {
+    const [newReception] = await db
+      .insert(receptions)
+      .values(reception)
+      .returning();
+    return newReception;
+  }
+
+  async getReception(id: string): Promise<Reception | undefined> {
+    const [reception] = await db.select().from(receptions).where(eq(receptions.id, id));
+    return reception;
+  }
+
+  async getReceptionsByContract(contractId: string): Promise<Reception[]> {
+    return await db
+      .select()
+      .from(receptions)
+      .where(eq(receptions.contractId, contractId))
+      .orderBy(desc(receptions.createdAt));
+  }
+
+  async updateReception(receptionId: string, updates: Partial<Reception>): Promise<Reception> {
+    const [updatedReception] = await db
+      .update(receptions)
+      .set(updates)
+      .where(eq(receptions.id, receptionId))
+      .returning();
+    return updatedReception;
+  }
+
+  async getAllReceptions(): Promise<Reception[]> {
+    return await db
+      .select()
+      .from(receptions)
+      .orderBy(desc(receptions.createdAt));
+  }
+
+  // Payment operations
+  async createPayment(payment: InsertPayment): Promise<Payment> {
+    const [newPayment] = await db
+      .insert(payments)
+      .values(payment)
+      .returning();
+    return newPayment;
+  }
+
+  async getPayment(id: string): Promise<Payment | undefined> {
+    const [payment] = await db.select().from(payments).where(eq(payments.id, id));
+    return payment;
+  }
+
+  async getPaymentsByInvoice(invoiceId: string): Promise<Payment[]> {
+    return await db
+      .select()
+      .from(payments)
+      .where(eq(payments.invoiceId, invoiceId))
+      .orderBy(desc(payments.createdAt));
+  }
+
+  async updatePayment(paymentId: string, updates: Partial<Payment>): Promise<Payment> {
+    const [updatedPayment] = await db
+      .update(payments)
+      .set(updates)
+      .where(eq(payments.id, paymentId))
+      .returning();
+    return updatedPayment;
+  }
+
+  async getAllPayments(): Promise<Payment[]> {
+    return await db
+      .select()
+      .from(payments)
+      .orderBy(desc(payments.createdAt));
   }
 }
 

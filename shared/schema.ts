@@ -115,12 +115,79 @@ export const tenderDocuments = pgTable("tender_documents", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Contracts (Marchés)
+export const contracts = pgTable("contracts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  tenderId: uuid("tender_id").references(() => tenders.id).notNull(),
+  contractorId: varchar("contractor_id").references(() => users.id), // Reference to contractor user
+  contractorName: text("contractor_name"), // Company name if not a user
+  dateSigned: timestamp("date_signed"),
+  amount: decimal("amount", { precision: 15, scale: 2 }).notNull(),
+  status: varchar("status").default("active"), // active, completed, terminated
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Invoices
+export const invoices = pgTable("invoices", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  contractId: uuid("contract_id").references(() => contracts.id).notNull(),
+  fileName: varchar("file_name"), // Invoice file path
+  originalFileName: varchar("original_file_name"),
+  status: varchar("status").default("pending"), // pending, approved, rejected, paid
+  amount: decimal("amount", { precision: 15, scale: 2 }),
+  submissionDate: timestamp("submission_date").defaultNow(),
+  approvedDate: timestamp("approved_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Orders (OS/Arrêt/Reprise)
+export const orders = pgTable("orders", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  type: varchar("type").notNull(), // OS, Arrêt, Reprise
+  contractId: uuid("contract_id").references(() => contracts.id).notNull(),
+  dateIssued: timestamp("date_issued").defaultNow(),
+  issuedById: varchar("issued_by_id").references(() => users.id).notNull(),
+  description: text("description"),
+  amount: decimal("amount", { precision: 15, scale: 2 }),
+  status: varchar("status").default("active"), // active, completed, cancelled
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Receptions
+export const receptions = pgTable("receptions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  contractId: uuid("contract_id").references(() => contracts.id).notNull(),
+  type: varchar("type").notNull(), // Provisional, Final
+  date: timestamp("date").defaultNow(),
+  status: varchar("status").default("pending"), // pending, approved, rejected
+  comments: text("comments"),
+  receivedById: varchar("received_by_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Payments
+export const payments = pgTable("payments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  invoiceId: uuid("invoice_id").references(() => invoices.id).notNull(),
+  amount: decimal("amount", { precision: 15, scale: 2 }).notNull(),
+  status: varchar("status").default("pending"), // pending, processed, completed, failed
+  paymentDate: timestamp("payment_date"),
+  processedById: varchar("processed_by_id").references(() => users.id),
+  paymentReference: varchar("payment_reference"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   createdTenders: many(tenders, { relationName: "created_by" }),
   assignedTenders: many(tenders, { relationName: "current_actor" }),
   stepHistory: many(tenderStepHistory),
   comments: many(tenderComments),
+  contracts: many(contracts),
+  issuedOrders: many(orders),
+  receptions: many(receptions),
+  processedPayments: many(payments),
 }));
 
 export const tendersRelations = relations(tenders, ({ one, many }) => ({
@@ -137,6 +204,7 @@ export const tendersRelations = relations(tenders, ({ one, many }) => ({
   stepHistory: many(tenderStepHistory),
   comments: many(tenderComments),
   documents: many(tenderDocuments),
+  contracts: many(contracts),
 }));
 
 export const workflowStepsRelations = relations(workflowSteps, ({ many }) => ({
@@ -180,6 +248,61 @@ export const tenderDocumentsRelations = relations(tenderDocuments, ({ one }) => 
   }),
 }));
 
+export const contractsRelations = relations(contracts, ({ one, many }) => ({
+  tender: one(tenders, {
+    fields: [contracts.tenderId],
+    references: [tenders.id],
+  }),
+  contractor: one(users, {
+    fields: [contracts.contractorId],
+    references: [users.id],
+  }),
+  invoices: many(invoices),
+  orders: many(orders),
+  receptions: many(receptions),
+}));
+
+export const invoicesRelations = relations(invoices, ({ one, many }) => ({
+  contract: one(contracts, {
+    fields: [invoices.contractId],
+    references: [contracts.id],
+  }),
+  payments: many(payments),
+}));
+
+export const ordersRelations = relations(orders, ({ one }) => ({
+  contract: one(contracts, {
+    fields: [orders.contractId],
+    references: [contracts.id],
+  }),
+  issuedBy: one(users, {
+    fields: [orders.issuedById],
+    references: [users.id],
+  }),
+}));
+
+export const receptionsRelations = relations(receptions, ({ one }) => ({
+  contract: one(contracts, {
+    fields: [receptions.contractId],
+    references: [contracts.id],
+  }),
+  receivedBy: one(users, {
+    fields: [receptions.receivedById],
+    references: [users.id],
+  }),
+}));
+
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  invoice: one(invoices, {
+    fields: [payments.invoiceId],
+    references: [invoices.id],
+  }),
+  processedBy: one(users, {
+    fields: [payments.processedById],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertTenderSchema = createInsertSchema(tenders).omit({
   id: true,
@@ -202,6 +325,32 @@ export const insertTenderCommentSchema = createInsertSchema(tenderComments).omit
 });
 
 export const insertTenderDocumentSchema = createInsertSchema(tenderDocuments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertContractSchema = createInsertSchema(contracts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertInvoiceSchema = createInsertSchema(invoices).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertReceptionSchema = createInsertSchema(receptions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPaymentSchema = createInsertSchema(payments).omit({
   id: true,
   createdAt: true,
 });
@@ -231,8 +380,18 @@ export type WorkflowStep = typeof workflowSteps.$inferSelect;
 export type TenderStepHistory = typeof tenderStepHistory.$inferSelect;
 export type TenderComment = typeof tenderComments.$inferSelect;
 export type TenderDocument = typeof tenderDocuments.$inferSelect;
+export type Contract = typeof contracts.$inferSelect;
+export type Invoice = typeof invoices.$inferSelect;
+export type Order = typeof orders.$inferSelect;
+export type Reception = typeof receptions.$inferSelect;
+export type Payment = typeof payments.$inferSelect;
 export type InsertTender = z.infer<typeof insertTenderSchema>;
 export type InsertWorkflowStep = z.infer<typeof insertWorkflowStepSchema>;
 export type InsertTenderStepHistory = z.infer<typeof insertTenderStepHistorySchema>;
 export type InsertTenderComment = z.infer<typeof insertTenderCommentSchema>;
 export type InsertTenderDocument = z.infer<typeof insertTenderDocumentSchema>;
+export type InsertContract = z.infer<typeof insertContractSchema>;
+export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type InsertReception = z.infer<typeof insertReceptionSchema>;
+export type InsertPayment = z.infer<typeof insertPaymentSchema>;
