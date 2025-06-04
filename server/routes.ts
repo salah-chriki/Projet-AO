@@ -8,6 +8,11 @@ import {
   insertTenderCommentSchema, 
   insertTenderStepHistorySchema, 
   insertTenderDocumentSchema,
+  insertContractSchema,
+  insertInvoiceSchema,
+  insertOrderSchema,
+  insertReceptionSchema,
+  insertPaymentSchema,
   upsertUserSchema 
 } from "@shared/schema";
 import { z } from "zod";
@@ -792,6 +797,301 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating diverse tenders:", error);
       res.status(500).json({ message: "Failed to create diverse tenders" });
+    }
+  });
+
+  // Contract Management API Routes
+  
+  // Contracts
+  app.get('/api/contracts', isAuthenticated, async (req, res) => {
+    try {
+      const contracts = await storage.getAllContracts();
+      res.json(contracts);
+    } catch (error) {
+      console.error("Error fetching contracts:", error);
+      res.status(500).json({ message: "Failed to fetch contracts" });
+    }
+  });
+
+  app.get('/api/contracts/:id', isAuthenticated, async (req, res) => {
+    try {
+      const contract = await storage.getContract(req.params.id);
+      if (!contract) {
+        return res.status(404).json({ message: "Contract not found" });
+      }
+      res.json(contract);
+    } catch (error) {
+      console.error("Error fetching contract:", error);
+      res.status(500).json({ message: "Failed to fetch contract" });
+    }
+  });
+
+  app.post('/api/contracts', isAuthenticated, async (req: any, res) => {
+    try {
+      const contractData = insertContractSchema.parse(req.body);
+      const contract = await storage.createContract(contractData);
+      res.status(201).json(contract);
+    } catch (error) {
+      console.error("Error creating contract:", error);
+      res.status(500).json({ message: "Failed to create contract" });
+    }
+  });
+
+  app.put('/api/contracts/:id', isAuthenticated, async (req, res) => {
+    try {
+      const updates = req.body;
+      const contract = await storage.updateContract(req.params.id, updates);
+      res.json(contract);
+    } catch (error) {
+      console.error("Error updating contract:", error);
+      res.status(500).json({ message: "Failed to update contract" });
+    }
+  });
+
+  app.get('/api/tenders/:id/contracts', isAuthenticated, async (req, res) => {
+    try {
+      const contracts = await storage.getContractsByTender(req.params.id);
+      res.json(contracts);
+    } catch (error) {
+      console.error("Error fetching tender contracts:", error);
+      res.status(500).json({ message: "Failed to fetch tender contracts" });
+    }
+  });
+
+  // Invoices
+  app.get('/api/invoices', isAuthenticated, async (req, res) => {
+    try {
+      const invoices = await storage.getAllInvoices();
+      res.json(invoices);
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({ message: "Failed to fetch invoices" });
+    }
+  });
+
+  app.get('/api/invoices/:id', isAuthenticated, async (req, res) => {
+    try {
+      const invoice = await storage.getInvoice(req.params.id);
+      if (!invoice) {
+        return res.status(404).json({ message: "Invoice not found" });
+      }
+      res.json(invoice);
+    } catch (error) {
+      console.error("Error fetching invoice:", error);
+      res.status(500).json({ message: "Failed to fetch invoice" });
+    }
+  });
+
+  app.post('/api/invoices', isAuthenticated, upload.single('invoiceFile'), async (req: any, res) => {
+    try {
+      const invoiceData = insertInvoiceSchema.parse({
+        ...req.body,
+        fileName: req.file?.filename,
+        originalFileName: req.file?.originalname,
+      });
+      const invoice = await storage.createInvoice(invoiceData);
+      res.status(201).json(invoice);
+    } catch (error) {
+      console.error("Error creating invoice:", error);
+      res.status(500).json({ message: "Failed to create invoice" });
+    }
+  });
+
+  app.put('/api/invoices/:id', isAuthenticated, async (req, res) => {
+    try {
+      const updates = req.body;
+      const invoice = await storage.updateInvoice(req.params.id, updates);
+      res.json(invoice);
+    } catch (error) {
+      console.error("Error updating invoice:", error);
+      res.status(500).json({ message: "Failed to update invoice" });
+    }
+  });
+
+  app.get('/api/contracts/:id/invoices', isAuthenticated, async (req, res) => {
+    try {
+      const invoices = await storage.getInvoicesByContract(req.params.id);
+      res.json(invoices);
+    } catch (error) {
+      console.error("Error fetching contract invoices:", error);
+      res.status(500).json({ message: "Failed to fetch contract invoices" });
+    }
+  });
+
+  // Orders
+  app.get('/api/orders', isAuthenticated, async (req, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.get('/api/orders/:id', isAuthenticated, async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
+  app.post('/api/orders', isAuthenticated, async (req: any, res) => {
+    try {
+      const orderData = insertOrderSchema.parse({
+        ...req.body,
+        issuedById: req.session.userId,
+      });
+      const order = await storage.createOrder(orderData);
+      res.status(201).json(order);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      res.status(500).json({ message: "Failed to create order" });
+    }
+  });
+
+  app.put('/api/orders/:id', isAuthenticated, async (req, res) => {
+    try {
+      const updates = req.body;
+      const order = await storage.updateOrder(req.params.id, updates);
+      res.json(order);
+    } catch (error) {
+      console.error("Error updating order:", error);
+      res.status(500).json({ message: "Failed to update order" });
+    }
+  });
+
+  app.get('/api/contracts/:id/orders', isAuthenticated, async (req, res) => {
+    try {
+      const orders = await storage.getOrdersByContract(req.params.id);
+      res.json(orders);
+    } catch (error) {
+      console.error("Error fetching contract orders:", error);
+      res.status(500).json({ message: "Failed to fetch contract orders" });
+    }
+  });
+
+  // Receptions
+  app.get('/api/receptions', isAuthenticated, async (req, res) => {
+    try {
+      const receptions = await storage.getAllReceptions();
+      res.json(receptions);
+    } catch (error) {
+      console.error("Error fetching receptions:", error);
+      res.status(500).json({ message: "Failed to fetch receptions" });
+    }
+  });
+
+  app.get('/api/receptions/:id', isAuthenticated, async (req, res) => {
+    try {
+      const reception = await storage.getReception(req.params.id);
+      if (!reception) {
+        return res.status(404).json({ message: "Reception not found" });
+      }
+      res.json(reception);
+    } catch (error) {
+      console.error("Error fetching reception:", error);
+      res.status(500).json({ message: "Failed to fetch reception" });
+    }
+  });
+
+  app.post('/api/receptions', isAuthenticated, async (req: any, res) => {
+    try {
+      const receptionData = insertReceptionSchema.parse({
+        ...req.body,
+        receivedById: req.session.userId,
+      });
+      const reception = await storage.createReception(receptionData);
+      res.status(201).json(reception);
+    } catch (error) {
+      console.error("Error creating reception:", error);
+      res.status(500).json({ message: "Failed to create reception" });
+    }
+  });
+
+  app.put('/api/receptions/:id', isAuthenticated, async (req, res) => {
+    try {
+      const updates = req.body;
+      const reception = await storage.updateReception(req.params.id, updates);
+      res.json(reception);
+    } catch (error) {
+      console.error("Error updating reception:", error);
+      res.status(500).json({ message: "Failed to update reception" });
+    }
+  });
+
+  app.get('/api/contracts/:id/receptions', isAuthenticated, async (req, res) => {
+    try {
+      const receptions = await storage.getReceptionsByContract(req.params.id);
+      res.json(receptions);
+    } catch (error) {
+      console.error("Error fetching contract receptions:", error);
+      res.status(500).json({ message: "Failed to fetch contract receptions" });
+    }
+  });
+
+  // Payments
+  app.get('/api/payments', isAuthenticated, async (req, res) => {
+    try {
+      const payments = await storage.getAllPayments();
+      res.json(payments);
+    } catch (error) {
+      console.error("Error fetching payments:", error);
+      res.status(500).json({ message: "Failed to fetch payments" });
+    }
+  });
+
+  app.get('/api/payments/:id', isAuthenticated, async (req, res) => {
+    try {
+      const payment = await storage.getPayment(req.params.id);
+      if (!payment) {
+        return res.status(404).json({ message: "Payment not found" });
+      }
+      res.json(payment);
+    } catch (error) {
+      console.error("Error fetching payment:", error);
+      res.status(500).json({ message: "Failed to fetch payment" });
+    }
+  });
+
+  app.post('/api/payments', isAuthenticated, async (req: any, res) => {
+    try {
+      const paymentData = insertPaymentSchema.parse({
+        ...req.body,
+        processedById: req.session.userId,
+      });
+      const payment = await storage.createPayment(paymentData);
+      res.status(201).json(payment);
+    } catch (error) {
+      console.error("Error creating payment:", error);
+      res.status(500).json({ message: "Failed to create payment" });
+    }
+  });
+
+  app.put('/api/payments/:id', isAuthenticated, async (req, res) => {
+    try {
+      const updates = req.body;
+      const payment = await storage.updatePayment(req.params.id, updates);
+      res.json(payment);
+    } catch (error) {
+      console.error("Error updating payment:", error);
+      res.status(500).json({ message: "Failed to update payment" });
+    }
+  });
+
+  app.get('/api/invoices/:id/payments', isAuthenticated, async (req, res) => {
+    try {
+      const payments = await storage.getPaymentsByInvoice(req.params.id);
+      res.json(payments);
+    } catch (error) {
+      console.error("Error fetching invoice payments:", error);
+      res.status(500).json({ message: "Failed to fetch invoice payments" });
     }
   });
 
