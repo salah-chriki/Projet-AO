@@ -1095,6 +1095,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create sample contract data endpoint
+  app.post('/api/seed-contracts', isAuthenticated, async (req, res) => {
+    try {
+      const { seedContractData } = await import("./contractSeedData");
+      await seedContractData();
+      res.json({ message: "Sample contract data created successfully" });
+    } catch (error) {
+      console.error("Error creating sample contract data:", error);
+      res.status(500).json({ message: "Failed to create sample contract data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -19,7 +19,7 @@ export async function seedContractData() {
           tenderId: tender.id,
           contractorName: getContractorName(tender.title),
           amount: tender.amount || "100000",
-          dateSigned: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+          dateSigned: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
           status: "active"
         });
 
@@ -32,8 +32,8 @@ export async function seedContractData() {
           originalFileName: `Facture_${getContractorName(tender.title)}_001.pdf`,
           status: "approved",
           amount: (Number(contract.amount) * 0.4).toString(),
-          submissionDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-          approvedDate: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
+          submissionDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+          approvedDate: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000)
         });
 
         const invoice2 = await storage.createInvoice({
@@ -42,14 +42,14 @@ export async function seedContractData() {
           originalFileName: `Facture_${getContractorName(tender.title)}_002.pdf`,
           status: "pending",
           amount: (Number(contract.amount) * 0.6).toString(),
-          submissionDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+          submissionDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
         });
 
         // Create orders
         await storage.createOrder({
           type: "OS",
           contractId: contract.id,
-          dateIssued: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+          dateIssued: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
           issuedById: "admin1",
           description: `Ordre de service - Début des travaux pour ${tender.title}`,
           amount: contract.amount,
@@ -59,7 +59,7 @@ export async function seedContractData() {
         await storage.createOrder({
           type: "Reprise",
           contractId: contract.id,
-          dateIssued: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+          dateIssued: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
           issuedById: "admin1",
           description: "Reprise des travaux après suspension technique",
           status: "active"
@@ -69,7 +69,7 @@ export async function seedContractData() {
         await storage.createReception({
           contractId: contract.id,
           type: "Provisional",
-          date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+          date: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
           status: "approved",
           comments: "Réception provisoire effectuée avec quelques réserves mineures",
           receivedById: "ce1"
@@ -78,7 +78,7 @@ export async function seedContractData() {
         await storage.createReception({
           contractId: contract.id,
           type: "Final",
-          date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+          date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
           status: "pending",
           comments: "En attente de la levée des réserves",
           receivedById: "ce1"
@@ -89,7 +89,7 @@ export async function seedContractData() {
           invoiceId: invoice1.id,
           amount: invoice1.amount!,
           status: "completed",
-          paymentDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+          paymentDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
           processedById: "admin1",
           paymentReference: `PAY-${Date.now()}-001`
         });
