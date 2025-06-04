@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Eye, Edit, FileText } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import CreateContractDialog from "@/components/create-contract-dialog";
+// import CreateContractDialog from "@/components/create-contract-dialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -32,11 +32,13 @@ export default function ContractsPage() {
 
   const updateContractMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Contract> }) => {
-      return await apiRequest(`/api/contracts/${id}`, {
+      const response = await fetch(`/api/contracts/${id}`, {
         method: "PUT",
         body: JSON.stringify(updates),
         headers: { "Content-Type": "application/json" },
       });
+      if (!response.ok) throw new Error("Failed to update contract");
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/contracts"] });
@@ -87,12 +89,10 @@ export default function ContractsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Gestion des Contrats</h1>
           <p className="text-gray-600">Gérez les contrats signés et leur suivi</p>
         </div>
-        <CreateContractDialog>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Nouveau Contrat
-          </Button>
-        </CreateContractDialog>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Nouveau Contrat
+        </Button>
       </div>
 
       <Card>
@@ -177,12 +177,10 @@ export default function ContractsPage() {
                   {searchTerm ? "Aucun contrat ne correspond à votre recherche." : "Commencez par créer votre premier contrat."}
                 </p>
                 {!searchTerm && (
-                  <CreateContractDialog>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Créer un contrat
-                    </Button>
-                  </CreateContractDialog>
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Créer un contrat
+                  </Button>
                 )}
               </div>
             )}
