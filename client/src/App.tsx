@@ -15,6 +15,11 @@ import TenderDetail from "@/pages/tender-detail";
 import MyTaskTenderDetail from "@/pages/myTask-tender-detail";
 import CreateTender from "@/pages/create-tender";
 import Actors from "@/pages/actors";
+import Contracts from "@/pages/contracts";
+import Invoices from "@/pages/invoices";
+import Orders from "@/pages/orders";
+import Receptions from "@/pages/receptions";
+import Payments from "@/pages/payments";
 import Sidebar from "@/components/sidebar";
 
 function Router() {
@@ -136,6 +141,56 @@ function Router() {
                 <Sidebar />
                 <div className="flex-1 overflow-hidden">
                   <Actors />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/contracts">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <Contracts />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/invoices">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <Invoices />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/orders">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <Orders />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/receptions">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <Receptions />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/payments">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <Payments />
                 </div>
               </div>
             )}

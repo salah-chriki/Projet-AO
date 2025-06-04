@@ -9,6 +9,11 @@ import {
   UserCircle,
   LogOut,
   BarChart3,
+  File,
+  Receipt,
+  ClipboardList,
+  CheckCircle,
+  CreditCard,
 } from "lucide-react";
 
 const navigationItems = [
@@ -34,6 +39,39 @@ const navigationItems = [
     name: "Gestion des acteurs",
     href: "/actors", 
     icon: Users,
+    adminOnly: true,
+  },
+];
+
+const contractItems = [
+  {
+    name: "Contrats",
+    href: "/contracts",
+    icon: File,
+    adminOnly: true,
+  },
+  {
+    name: "Factures",
+    href: "/invoices",
+    icon: Receipt,
+    adminOnly: true,
+  },
+  {
+    name: "Ordres",
+    href: "/orders",
+    icon: ClipboardList,
+    adminOnly: true,
+  },
+  {
+    name: "Réceptions",
+    href: "/receptions",
+    icon: CheckCircle,
+    adminOnly: true,
+  },
+  {
+    name: "Paiements",
+    href: "/payments",
+    icon: CreditCard,
     adminOnly: true,
   },
 ];
@@ -81,7 +119,7 @@ export default function Sidebar() {
       
       <nav className="mt-6 flex-1 flex flex-col">
         <div className="flex-1">
-          {user.isAdmin && (
+          {user?.isAdmin && (
             <>
               <div className="px-6">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -90,6 +128,31 @@ export default function Sidebar() {
               </div>
               <div className="mt-4 space-y-1">
                 {navigationItems.map((item) => {
+                  const isActive = location === item.href;
+                  return (
+                    <Link key={item.href} href={item.href}>
+                      <a
+                        className={`flex items-center px-6 py-3 text-sm font-medium transition-colors ${
+                          isActive
+                            ? "text-blue-700 bg-blue-50 border-r-2 border-blue-700"
+                            : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                        }`}
+                      >
+                        <item.icon className="w-5 h-5 mr-3" />
+                        {item.name}
+                      </a>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div className="px-6 mt-8">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  Gestion Contractuelle
+                </p>
+              </div>
+              <div className="mt-4 space-y-1">
+                {contractItems.map((item) => {
                   const isActive = location === item.href;
                   return (
                     <Link key={item.href} href={item.href}>
