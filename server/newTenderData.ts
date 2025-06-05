@@ -4,9 +4,12 @@ import { tenders, tenderStepHistory } from "@shared/schema";
 export async function createPhase1Step1Tenders() {
   console.log("Creating 10 tenders at Phase 1, Step 1 for different directions...");
   
-  // Clear existing data - first clear step history, then tenders
-  await db.delete(tenderStepHistory);
-  await db.delete(tenders);
+  // Check if tenders already exist to avoid foreign key conflicts
+  const existingTenders = await db.select().from(tenders);
+  if (existingTenders.length >= 10) {
+    console.log("Tenders already exist, skipping creation...");
+    return;
+  }
 
   // Create 10 tenders at Phase 1, Step 1 for different directions
   const newTenders = [
