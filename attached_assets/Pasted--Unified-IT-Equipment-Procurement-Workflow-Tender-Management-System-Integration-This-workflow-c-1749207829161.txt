@@ -1,0 +1,370 @@
+# Unified IT Equipment Procurement Workflow
+## Tender Management System Integration
+
+This workflow combines the system's role-based process management with IT equipment procurement specifics, showing how each step flows through the different system actors.
+
+---
+
+## 🔵 PHASE 1: PREPARATION & PUBLICATION (23 Steps)
+
+### Step 1: Needs Assessment
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Evaluate IT requirements (computers, printers, servers, software)
+- **System Status**: 🟢 En cours
+
+### Step 2: User Consultation
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Consult with end users and IT department
+- **System Status**: 🟢 En cours
+
+### Step 3: Technical Specifications
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Elaborate technical specifications (DAO - Dossier d'Appel d'Offres)
+- **System Status**: 🟢 En cours
+
+### Step 4: Document Preparation
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Prepare technical annexes and plans
+- **System Status**: 🟢 En cours
+
+### Step 5: Transmission to Markets
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Transmit complete technical specifications to SM
+- **System Status**: ✅ Transmitted
+- **Next**: SM receives task notification
+
+### Step 6: Administrative Documents Preparation
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Prepare administrative pieces (consultation rules, commitment model)
+- **System Status**: 🟢 En cours
+
+### Step 7: Special Specifications
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Draft CPS (Cahier des Prescriptions Spéciales)
+- **System Status**: 🟢 En cours
+
+### Step 8: General Clauses Integration
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Include CCAG-Fournitures (General Administrative Clauses)
+- **System Status**: 🟢 En cours
+
+### Step 9: Budget Estimation
+**Actor: SM (Service Marchés) - Purple** + **SB (Service Budgétaire) - Orange**
+- **Action**: Determine estimated budget
+- **System Status**: 🟢 En cours
+
+### Step 10: Procurement Method Selection
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Choose procurement method (open/restricted tender)
+- **System Status**: ✅ Ready for validation
+- **Next**: Submit to CE for validation
+
+### Step 11: Regulatory Compliance Review
+**Actor: CE (Contrôle d'État) - Green**
+- **Action**: Examine regulatory compliance
+- **System Status**: 🟢 En cours
+
+### Step 12: Budget Verification
+**Actor: CE (Contrôle d'État) - Green** + **SB (Service Budgétaire) - Orange**
+- **Action**: Verify budget adequacy
+- **System Status**: 🟢 En cours
+
+### Step 13: Technical Alignment Review
+**Actor: CE (Contrôle d'État) - Green** + **ST (Service Technique) - Blue**
+- **Action**: Review technical specifications alignment with needs
+- **System Status**: 🟢 En cours
+
+### Step 14: Recommendations Formulation
+**Actor: CE (Contrôle d'État) - Green**
+- **Action**: Formulate recommendations or corrections
+- **System Status**: 🟠 En attente
+
+### Step 15: Validation Decision
+**Actor: CE (Contrôle d'État) - Green**
+- **System Decision**: Approve/Request Modifications
+- **If Modifications**: Return to ST → SM (iterative cycle)
+- **If Approved**: Proceed to budget commitment
+- **System Status**: ✅ Validated or 🔴 Corrections Required
+
+### Step 16: Budget Availability Check
+**Actor: SB (Service Budgétaire) - Orange**
+- **Action**: Verify budget availability
+- **System Status**: 🟢 En cours
+
+### Step 17: Credit Commitment
+**Actor: SB (Service Budgétaire) - Orange**
+- **Action**: Commit necessary credits
+- **System Status**: 🟢 En cours
+
+### Step 18: Financial Framework Validation
+**Actor: SB (Service Budgétaire) - Orange** + **CE (Contrôle d'État) - Green**
+- **Action**: Validate financial framework
+- **System Status**: ✅ Budget Committed
+
+### Step 19: Portal Publication
+**Actor: SM (Service Marchés) - Purple** + **ADMIN (Administrateur) - Gray**
+- **Action**: Publish tender notice on marchespublics.gov.ma portal
+- **System Status**: 🟢 En cours
+
+### Step 20: Legal Publication (Optional)
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Optional publication in legal announcement journals
+- **System Status**: 🟢 En cours
+
+### Step 21: Document Distribution
+**Actor: SM (Service Marchés) - Purple** + **ADMIN (Administrateur) - Gray**
+- **Action**: Make tender documents available for free download
+- **System Status**: 🟢 En cours
+
+### Step 22: Deadline Management
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Set submission deadlines and clarification periods
+- **System Status**: 🟠 En attente
+
+### Step 23: Inquiry Management
+**Actor: SM (Service Marchés) - Purple** + **ST (Service Technique) - Blue**
+- **Action**: Manage bidder inquiries and clarifications
+- **System Status**: 🟠 En attente (waiting for bids)
+- **Public Phase**: Tender is now live and visible to suppliers
+
+---
+
+## 🟣 PHASE 2: EXECUTION & CONTROL (19 Steps)
+
+### Step 24: Bid Reception
+**Actor: SM (Service Marchés) - Purple** + **ADMIN (Administrateur) - Gray**
+- **Action**: Receive bids (electronic/physical/mixed submission)
+- **System Status**: 🟢 En cours
+
+### Step 25: Commission Organization
+**Actor: SM (Service Marchés) - Purple** + **ADMIN (Administrateur) - Gray**
+- **Action**: Organize public opening session
+- **System Status**: 🟢 En cours
+
+### Step 26: Commission Coordination
+**Actor: SM (Service Marchés) - Purple** + **CE (Contrôle d'État) - Green** + **ST (Service Technique) - Blue**
+- **Action**: Coordinate procurement commission
+- **System Status**: 🟢 En cours
+
+### Step 27: Sequential Opening
+**Actor: SM (Service Marchés) - Purple** + **Commission Members (All Actors)**
+- **Action**: Sequential opening: administrative → technical → financial
+- **System Status**: 🟢 En cours
+- **Participants**: Commission members, observers
+
+### Step 28: Document Verification
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Verify required documents (tax certificates, CNSS, attestations)
+- **System Status**: 🟢 En cours
+
+### Step 29: Eligibility Check
+**Actor: SM (Service Marchés) - Purple** + **CE (Contrôle d'État) - Green**
+- **Action**: Check bidder eligibility and qualifications
+- **System Status**: 🟢 En cours
+
+### Step 30: Legal Compliance Validation
+**Actor: CE (Contrôle d'État) - Green**
+- **Action**: Validate legal compliance
+- **System Status**: 🟢 En cours
+
+### Step 31: Administrative Decision
+**Actor: SM (Service Marchés) - Purple** + **CE (Contrôle d'État) - Green**
+- **System Decision**: Administratively Compliant/Non-Compliant
+- **System Status**: ✅ Compliant or ❌ Non-Compliant
+
+### Step 32: Qualified Bidders Selection
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Select administratively compliant bidders for technical evaluation
+- **System Status**: ✅ Administrative Phase Complete
+- **Next**: Only compliant bidders proceed to technical evaluation
+
+### Step 33: Specification Compliance Check
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Verify equipment specifications compliance
+- **System Status**: 🟢 En cours
+
+### Step 34: Technical Analysis
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Conduct technical analysis against DAO requirements
+- **System Status**: 🟢 En cours
+
+### Step 35: Product Testing/Demonstration
+**Actor: ST (Service Technique) - Blue** + **SM (Service Marchés) - Purple**
+- **Action**: Organize product demonstrations or tests if required
+- **System Status**: 🟢 En cours
+
+### Step 36: Quality Assessment
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Evaluate technical proposals quality
+- **System Status**: 🟢 En cours
+
+### Step 37: Technical Decision
+**Actor: ST (Service Technique) - Blue** + **SM (Service Marchés) - Purple**
+- **System Decision**: Technically Acceptable/Rejected
+- **System Status**: ✅ Technical Phase Complete
+- **Next**: Only technically acceptable offers proceed to financial evaluation
+
+### Step 38: Financial Offers Analysis
+**Actor: SM (Service Marchés) - Purple** + **SB (Service Budgétaire) - Orange**
+- **Action**: Analyze financial offers from technically qualified bidders
+- **System Status**: 🟢 En cours
+
+### Step 39: Price Comparison
+**Actor: SM (Service Marchés) - Purple** + **SB (Service Budgétaire) - Orange**
+- **Action**: Compare prices and payment terms
+- **System Status**: 🟢 En cours
+
+### Step 40: Economic Advantage Determination
+**Actor: SM (Service Marchés) - Purple** + **CE (Contrôle d'État) - Green** + **SB (Service Budgétaire) - Orange**
+- **Action**: Determine most economically advantageous offer
+- **System Status**: ✅ Financial Evaluation Complete
+- **Criteria**: Usually lowest price, but may include quality/technical factors
+
+### Step 41: Deliberation Report Preparation
+**Actor: SM (Service Marchés) - Purple** + **CE (Contrôle d'État) - Green**
+- **Action**: Prepare deliberation report (PV de délibération)
+- **System Status**: 🟢 En cours
+
+### Step 42: Award Justification Documentation
+**Actor: SM (Service Marchés) - Purple** + **CE (Contrôle d'État) - Green**
+- **Action**: Document award justification and coordinate approval process
+- **System Status**: ✅ Attributed
+- **Next**: Formal approval and notification
+
+---
+
+## 🔴 PHASE 3: PAYMENT & EXECUTION PROCESSING (17 Steps)
+
+### Step 43: Award File Review
+**Actor: CE (Contrôle d'État) - Green**
+- **Action**: Review complete award file
+- **System Status**: 🟢 En cours
+
+### Step 44: Contract Terms Validation
+**Actor: CE (Contrôle d'État) - Green** + **SM (Service Marchés) - Purple**
+- **Action**: Validate contract terms and conditions
+- **System Status**: 🟢 En cours
+
+### Step 45: Final Regulatory Approval
+**Actor: CE (Contrôle d'État) - Green**
+- **System Decision**: Approve/Request Corrections
+- **Authority**: Competent authority approval
+- **System Status**: ✅ Approved or 🔴 Corrections Required
+
+### Step 46: Winner Notification
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Official written notification to successful bidder
+- **System Status**: 🟢 En cours
+
+### Step 47: Performance Guarantee & Contract Signature
+**Actor: SM (Service Marchés) - Purple** + **SB (Service Budgétaire) - Orange**
+- **Action**: Request performance guarantee (typically 3% of contract value) and finalize contract signature
+- **System Status**: ✅ Contract Signed
+
+### Step 48: Purchase Order Issuance
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Issue purchase orders
+- **System Status**: 🟢 En cours
+
+### Step 49: Delivery Schedule Monitoring
+**Actor: SM (Service Marchés) - Purple** + **ST (Service Technique) - Blue**
+- **Action**: Monitor delivery schedules
+- **System Status**: 🟢 En cours
+
+### Step 50: Logistics Coordination
+**Actor: SM (Service Marchés) - Purple** + **ST (Service Technique) - Blue**
+- **Action**: Coordinate delivery logistics
+- **System Status**: 🟢 En cours
+
+### Step 51: Receipt Verification
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Verify equipment conformity upon receipt
+- **System Status**: 🟢 En cours
+
+### Step 52: Execution Status Update
+**Actor: SM (Service Marchés) - Purple**
+- **Action**: Update execution status and coordinate next steps
+- **System Status**: 🟢 En cours (execution)
+
+### Step 53: Reception Commission Formation
+**Actor: ST (Service Technique) - Blue** + **SM (Service Marchés) - Purple**
+- **Action**: Form reception commission
+- **System Status**: 🟢 En cours
+
+### Step 54: Physical & Technical Verification
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Conduct physical and technical verification
+- **System Status**: 🟢 En cours
+
+### Step 55: Equipment Testing & Reception Report
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Test equipment functionality and establish reception report (PV de réception)
+- **System Decision**: Provisional Acceptance → Final Acceptance
+- **Timeline**: Provisional → Final (after guarantee period)
+- **System Status**: ✅ Provisionally Accepted
+
+### Step 56: Payment Documentation Verification
+**Actor: SOR (Service Ordonnancement) - Red**
+- **Action**: Verify payment documentation completeness
+- **System Status**: 🟢 En cours
+
+### Step 57: Invoice Accuracy Check
+**Actor: SOR (Service Ordonnancement) - Red** + **SM (Service Marchés) - Purple**
+- **Action**: Check invoice accuracy against contract
+- **System Status**: 🟢 En cours
+
+### Step 58: Payment Order Preparation
+**Actor: SOR (Service Ordonnancement) - Red** + **SB (Service Budgétaire) - Orange**
+- **Action**: Prepare payment orders and coordinate with treasury services
+- **System Status**: 🟠 Payment Processing
+
+### Step 59: Final Payment Authorization & Execution
+**Actor: TP (Trésorier Payeur) - Turquoise**
+- **Action**: Final control of payment file, authorize fund disbursement, and execute payment (standard 60-day delay)
+- **System Status**: ✅ Paid
+- **Final Step**: Contract completion
+
+---
+
+## 📊 System Integration Features
+
+### Dashboard Views by Role:
+- **ST Dashboard**: Technical tasks, reception duties, quality control
+- **SM Dashboard**: Coordination tasks, administrative management, contract oversight
+- **CE Dashboard**: Validation tasks, regulatory compliance, budget control
+- **SB Dashboard**: Budget engagement, financial verification
+- **SOR Dashboard**: Payment processing, financial control
+- **TP Dashboard**: Final payment authorization
+- **ADMIN Dashboard**: System overview, user management, reporting
+
+### Automated Notifications:
+- 🔴 **Urgent** (< 24h): Deadline approaching, critical approvals
+- 🟠 **Important** (1-3 days): Regular workflow progression
+- 🟢 **Normal** (> 3 days): Standard processing timeframe
+
+### Audit Trail & Traceability:
+- Complete decision history with timestamps
+- User actions and comments logging
+- Document version control
+- Status change tracking
+- Deadline compliance monitoring
+
+### Integration Points:
+- **Portal Connection**: Direct link to marchespublics.gov.ma
+- **Document Management**: Centralized file storage and sharing
+- **Workflow Automation**: Automatic task routing between actors
+- **Reporting**: Real-time progress and performance metrics
+
+---
+
+## 📁 Post-Execution Management
+
+### Archiving & Documentation
+**Actor: ADMIN (Administrateur) - Gray** + **SM (Service Marchés) - Purple**
+- **Action**: Contract documentation preservation, audit trail maintenance, legal compliance records
+
+### Equipment Follow-up & Maintenance
+**Actor: ST (Service Technique) - Blue**
+- **Action**: Warranty tracking, maintenance scheduling, performance monitoring, replacement planning
+
+This unified workflow ensures complete integration between the system's process management capabilities and the specific requirements of IT equipment procurement in Moroccan public institutions.

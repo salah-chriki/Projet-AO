@@ -1143,6 +1143,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create IT Equipment procurement tender endpoint
+  app.post('/api/create-it-tender', isAuthenticated, async (req, res) => {
+    try {
+      const { createITEquipmentTender } = await import("./itEquipmentWorkflow");
+      const itTender = await createITEquipmentTender();
+      res.json({ 
+        message: "IT Equipment procurement tender created successfully",
+        tender: itTender
+      });
+    } catch (error) {
+      console.error("Error creating IT equipment tender:", error);
+      res.status(500).json({ message: "Failed to create IT equipment tender" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

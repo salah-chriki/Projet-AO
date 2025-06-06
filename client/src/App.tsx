@@ -21,6 +21,7 @@ import Orders from "@/pages/orders";
 import Receptions from "@/pages/receptions";
 import Payments from "@/pages/payments";
 import WorkflowDashboard from "@/pages/workflow-dashboard";
+import ITWorkflowDemo from "@/pages/it-workflow-demo";
 import Sidebar from "@/components/sidebar";
 
 function Router() {
@@ -202,6 +203,16 @@ function Router() {
                 <Sidebar />
                 <div className="flex-1 overflow-hidden">
                   <WorkflowDashboard />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/it-demo">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <ITWorkflowDemo />
                 </div>
               </div>
             )}
