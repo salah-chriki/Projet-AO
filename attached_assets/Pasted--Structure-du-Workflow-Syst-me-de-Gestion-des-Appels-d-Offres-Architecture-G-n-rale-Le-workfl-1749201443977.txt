@@ -1,0 +1,157 @@
+# Structure du Workflow - Système de Gestion des Appels d'Offres
+
+## Architecture Générale
+Le workflow est organisé en **3 phases principales** avec **59 étapes au total** :
+
+## 📋 Phase 1 : Préparation et Publication (23 étapes)
+
+### Étape 1-5 : Préparation Technique
+**Acteur Principal :** 🔵 Service Technique (ST)
+- Identification et évaluation des besoins
+- Élaboration du cahier des charges techniques
+- Préparation du Dossier d'Appel d'Offres (DAO)
+- Constitution des annexes techniques
+- **Transmission vers** 🟣 Service Marchés (SM)
+
+### Étape 6-10 : Validation Administrative
+**Acteur Principal :** 🟣 Service Marchés (SM)
+- Vérification de la conformité administrative
+- Compilation du dossier complet
+- Préparation des pièces administratives
+- Estimation budgétaire
+- **Transmission vers** 🟢 Contrôle d'État (CE)
+
+### Étape 11-15 : Contrôle Réglementaire
+**Acteur Principal :** 🟢 Contrôle d'État (CE)
+- Examen de la conformité réglementaire
+- Vérification de l'adéquation budgétaire
+- Contrôle des procédures
+- **Si corrections nécessaires :** Retour vers 🔵 ST ou 🟣 SM
+- **Si validé :** Transmission vers 🟠 Service Budgétaire (SB)
+
+### Étape 16-20 : Engagement Budgétaire
+**Acteur Principal :** 🟠 Service Budgétaire (SB)
+- Vérification de la disponibilité budgétaire
+- Engagement des crédits
+- Validation financière
+- **Transmission vers** 🟣 Service Marchés (SM)
+
+### Étape 21-23 : Publication
+**Acteur Principal :** 🟣 Service Marchés (SM)
+- Publication sur le portail des marchés publics
+- Publication dans la presse spécialisée (si requis)
+- Mise à disposition du dossier d'appel d'offres
+
+---
+
+## 🏗️ Phase 2 : Exécution et Contrôle (19 étapes)
+
+### Étape 24-28 : Réception et Ouverture des Offres
+**Acteur Principal :** 🟣 Service Marchés (SM)
+- Réception des plis dans les délais
+- Organisation de la séance d'ouverture publique
+- Constitution de la commission d'ouverture
+- Ouverture séquentielle (administratif → technique → financier)
+- Établissement du PV d'ouverture
+
+### Étape 29-33 : Évaluation des Offres
+**Acteurs Multiples :** 🟣 SM + 🔵 ST + 🟢 CE
+- **SM :** Examen administratif des offres
+- **ST :** Évaluation technique et conformité
+- **CE :** Contrôle de la procédure d'évaluation
+- Analyse comparative des offres
+- Classement des soumissionnaires
+
+### Étape 34-38 : Attribution et Approbation
+**Acteurs :** 🟣 SM → 🟢 CE → 🟠 SB
+- Élaboration du PV de délibération
+- Validation de l'attribution par CE
+- Vérification budgétaire finale par SB
+- Approbation du marché
+- Signature du marché
+
+### Étape 39-42 : Notification et Démarrage
+**Acteur Principal :** 🟣 Service Marchés (SM)
+- Notification officielle au titulaire
+- Réception de la caution définitive
+- Émission de l'ordre de service de commencer
+- Démarrage effectif des prestations
+
+---
+
+## 💰 Phase 3 : Traitement des Paiements (17 étapes)
+
+### Étape 43-47 : Réception et Contrôle
+**Acteur Principal :** 🔵 Service Technique (ST)
+- Constitution de la commission de réception
+- Vérification de la conformité des livraisons
+- Contrôle qualité des prestations
+- Établissement du procès-verbal de réception
+- **Transmission vers** 🟣 Service Marchés (SM)
+
+### Étape 48-52 : Préparation du Dossier de Paiement
+**Acteur Principal :** 🟣 Service Marchés (SM)
+- Certification des factures
+- Constitution du dossier de paiement
+- Vérification administrative
+- Calcul des montants à payer
+- **Transmission vers** 🔴 Service Ordonnancement (SOR)
+
+### Étape 53-56 : Ordonnancement
+**Acteur Principal :** 🔴 Service Ordonnancement (SOR)
+- Vérification du dossier de paiement
+- Contrôle des pièces justificatives
+- Établissement de l'ordre de paiement
+- **Transmission vers** 🟦 Trésorier Payeur (TP)
+
+### Étape 57-59 : Paiement Final
+**Acteur Principal :** 🟦 Trésorier Payeur (TP)
+- Contrôle final des paiements
+- Validation des ordres de paiement
+- Décaissement effectif des fonds
+
+---
+
+## 🔄 Mécanismes de Workflow
+
+### Actions Possibles à Chaque Étape
+- ✅ **Approuver** : Validation et transmission à l'étape suivante
+- ❌ **Rejeter** : Retour à l'acteur précédent avec commentaires
+- 🔄 **Demander Modifications** : Corrections demandées avant validation
+- ⏸️ **Suspendre** : Mise en attente temporaire
+
+### Système de Notifications
+- 🔴 **Urgent** : < 24h (notification immédiate)
+- 🟠 **Important** : 1-3 jours (notification quotidienne)
+- 🟢 **Normal** : > 3 jours (notification hebdomadaire)
+
+### Traçabilité Complète
+- Historique de toutes les actions
+- Horodatage des décisions
+- Commentaires et justifications
+- Archivage automatique des documents
+
+### Gestion des Exceptions
+- **Procédure d'arrêt temporaire**
+- **Mise en demeure** en cas de retard
+- **Résiliation** pour défaillance grave
+- **Escalade automatique** en cas de dépassement d'échéance
+
+---
+
+## 📊 Tableaux de Bord par Rôle
+
+### Vue Administrateur (ADMIN)
+- Vision globale de tous les appels d'offres
+- Statistiques et indicateurs de performance
+- Gestion des utilisateurs et paramètres système
+- Supervision des délais et alertes
+
+### Vue par Service
+Chaque acteur dispose d'un tableau de bord personnalisé affichant :
+- Tâches en attente avec priorités
+- Échéances à respecter
+- Historique des actions
+- Statistiques personnelles
+
+Cette structure garantit un workflow fluide, traçable et conforme aux réglementations des marchés publics marocains.

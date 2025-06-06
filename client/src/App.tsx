@@ -20,6 +20,7 @@ import Invoices from "@/pages/invoices";
 import Orders from "@/pages/orders";
 import Receptions from "@/pages/receptions";
 import Payments from "@/pages/payments";
+import WorkflowDashboard from "@/pages/workflow-dashboard";
 import Sidebar from "@/components/sidebar";
 
 function Router() {

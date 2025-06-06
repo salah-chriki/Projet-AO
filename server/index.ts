@@ -39,6 +39,14 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
   
+  // Initialize detailed 59-step workflow
+  try {
+    const { initializeDetailedWorkflow } = await import("./detailedWorkflow");
+    await initializeDetailedWorkflow();
+  } catch (error) {
+    console.log("Detailed workflow already exists or error creating:", error);
+  }
+
   // Create sample contract data
   try {
     const { seedContractData } = await import("./contractSeedData");
