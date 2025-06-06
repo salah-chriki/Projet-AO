@@ -14,6 +14,7 @@ import {
   ClipboardList,
   CheckCircle,
   CreditCard,
+  GitBranch,
 } from "lucide-react";
 
 const navigationItems = [
@@ -21,6 +22,12 @@ const navigationItems = [
     name: "Vue d'ensemble",
     href: "/dashboard",
     icon: LayoutDashboard,
+    adminOnly: true,
+  },
+  {
+    name: "Workflow (59 étapes)",
+    href: "/workflow",
+    icon: GitBranch,
     adminOnly: true,
   },
   {

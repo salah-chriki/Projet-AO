@@ -196,6 +196,16 @@ function Router() {
               </div>
             )}
           </Route>
+          <Route path="/workflow">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <WorkflowDashboard />
+                </div>
+              </div>
+            )}
+          </Route>
         </>
       )}
       {/* Fallback to 404 */}

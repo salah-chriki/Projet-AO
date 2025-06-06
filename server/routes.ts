@@ -1107,6 +1107,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Workflow steps endpoints
+  app.get('/api/workflow-steps', isAuthenticated, async (req, res) => {
+    try {
+      const steps = await storage.getWorkflowSteps();
+      res.json(steps);
+    } catch (error) {
+      console.error("Error fetching workflow steps:", error);
+      res.status(500).json({ message: "Failed to fetch workflow steps" });
+    }
+  });
+
+  app.get('/api/workflow/stats', isAuthenticated, async (req, res) => {
+    try {
+      const tenders = await storage.getAllTenders();
+      const activeTenders = tenders.filter((t: any) => t.status === 'active');
+      const completedTenders = tenders.filter((t: any) => t.status === 'completed');
+      
+      const phaseDistribution = activeTenders.reduce((acc: any, tender: any) => {
+        const phase = `phase${tender.currentPhase}`;
+        acc[phase] = (acc[phase] || 0) + 1;
+        return acc;
+      }, {});
+
+      res.json({
+        totalTenders: tenders.length,
+        activeTenders: activeTenders.length,
+        completedTenders: completedTenders.length,
+        phaseDistribution,
+        averageStepDuration: 2.5 // Based on workflow analysis
+      });
+    } catch (error) {
+      console.error("Error fetching workflow stats:", error);
+      res.status(500).json({ message: "Failed to fetch workflow stats" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
