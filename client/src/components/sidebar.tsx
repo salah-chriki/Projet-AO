@@ -16,6 +16,7 @@ import {
   CreditCard,
   GitBranch,
   Monitor,
+  FolderOpen,
 } from "lucide-react";
 
 const navigationItems = [
@@ -53,6 +54,12 @@ const navigationItems = [
     name: "Gestion des acteurs",
     href: "/actors", 
     icon: Users,
+    adminOnly: true,
+  },
+  {
+    name: "Projets",
+    href: "/projects",
+    icon: FolderOpen,
     adminOnly: true,
   },
 ];

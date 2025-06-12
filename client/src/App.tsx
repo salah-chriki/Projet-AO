@@ -20,6 +20,7 @@ import Invoices from "@/pages/invoices";
 import Orders from "@/pages/orders";
 import Receptions from "@/pages/receptions";
 import Payments from "@/pages/payments";
+import Projects from "@/pages/Projects";
 import WorkflowDashboard from "@/pages/workflow-dashboard";
 import ITWorkflowDemo from "@/pages/it-workflow-demo";
 import DataExport from "@/pages/data-export";
@@ -144,6 +145,18 @@ function Router() {
                 <Sidebar />
                 <div className="flex-1 overflow-hidden">
                   <Actors />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/projects">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <div className="h-full overflow-auto p-6">
+                    <Projects />
+                  </div>
                 </div>
               </div>
             )}
