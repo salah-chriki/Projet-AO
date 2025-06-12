@@ -50,13 +50,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { initializeDemoUsers } = await import("./initUsers");
   await initializeDemoUsers();
 
-  // Initialize real workflow steps
-  const { initializeRealWorkflowSteps } = await import("./realWorkflowSteps");
-  await initializeRealWorkflowSteps();
-
-  // Create Phase 1 Step 1 tenders for all directions
-  const { createPhase1Step1Tenders } = await import("./newTenderData");
-  await createPhase1Step1Tenders();
+  // Initialize real workflow steps with error handling
+  try {
+    const { initializeRealWorkflowSteps } = await import("./realWorkflowSteps");
+    await initializeRealWorkflowSteps();
+    
+    // Create Phase 1 Step 1 tenders for all directions
+    const { createPhase1Step1Tenders } = await import("./newTenderData");
+    await createPhase1Step1Tenders();
+    
+    console.log("Database initialization completed successfully");
+  } catch (error) {
+    console.warn("Database initialization failed, continuing with limited functionality:", error instanceof Error ? error.message : error);
+  }
 
   // Auth routes are handled by setupSimpleAuth
 
@@ -1155,6 +1161,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating IT equipment tender:", error);
       res.status(500).json({ message: "Failed to create IT equipment tender" });
+    }
+  });
+
+  // Data export endpoints
+  app.get('/api/export/data', isAuthenticated, async (req, res) => {
+    try {
+      const { exportAllData, generateExportSummary } = await import("./dataExport");
+      const data = await exportAllData();
+      const summary = generateExportSummary(data);
+      
+      res.json({
+        success: true,
+        summary,
+        data,
+        exportDate: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to export data",
+        error: error.message 
+      });
+    }
+  });
+
+  app.get('/api/export/download/:format', isAuthenticated, async (req, res) => {
+    try {
+      const format = req.params.format as 'json' | 'csv';
+      if (format !== 'json' && format !== 'csv') {
+        return res.status(400).json({ message: "Format must be 'json' or 'csv'" });
+      }
+
+      const { exportToFile } = await import("./dataExport");
+      const filepath = await exportToFile(format);
+      
+      if (format === 'json') {
+        res.download(filepath, `tender_system_export_${new Date().toISOString().split('T')[0]}.json`);
+      } else {
+        res.json({ 
+          success: true, 
+          message: `CSV files exported to exports directory`,
+          path: filepath 
+        });
+      }
+    } catch (error) {
+      console.error("Error downloading export:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to download export",
+        error: error.message 
+      });
     }
   });
 

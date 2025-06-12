@@ -22,6 +22,7 @@ import Receptions from "@/pages/receptions";
 import Payments from "@/pages/payments";
 import WorkflowDashboard from "@/pages/workflow-dashboard";
 import ITWorkflowDemo from "@/pages/it-workflow-demo";
+import DataExport from "@/pages/data-export";
 import Sidebar from "@/components/sidebar";
 
 function Router() {
