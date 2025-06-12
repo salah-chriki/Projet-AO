@@ -1,0 +1,122 @@
+Table,Column,Data_Type,Constraints,Description,Example_Value
+users,id,TEXT,PRIMARY KEY,Unique user identifier,admin1
+users,username,TEXT,UNIQUE NOT NULL,Login username,admin
+users,email,TEXT,UNIQUE NOT NULL,User email address,admin@example.com
+users,password,TEXT,NOT NULL,Hashed password,$2b$10$hashedvalue
+users,role,TEXT,NOT NULL DEFAULT 'user',User role (admin/st/sm/ce/sb/sor/tp),admin
+users,isAdmin,BOOLEAN,DEFAULT false,Administrative privileges flag,true
+users,division,TEXT,,Organizational division,ADMIN
+users,direction,TEXT,,Organizational direction,ADMIN
+users,createdAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Account creation date,2024-01-01 10:00:00
+users,updatedAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Last update timestamp,2024-01-01 10:00:00
+
+workflow_steps,id,SERIAL,PRIMARY KEY,Auto-generated step ID,1
+workflow_steps,stepNumber,INTEGER,NOT NULL,Step number in workflow (1-59),1
+workflow_steps,phase,INTEGER,NOT NULL,Workflow phase (1-3),1
+workflow_steps,title,TEXT,NOT NULL,Step title,Évaluation des besoins
+workflow_steps,description,TEXT,,Detailed step description,Analyser et identifier les besoins
+workflow_steps,actorRole,TEXT,NOT NULL,Responsible actor role,ST
+workflow_steps,estimatedDuration,INTEGER,DEFAULT 1,Estimated duration in days,2
+workflow_steps,createdAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Step creation timestamp,2024-01-01 10:00:00
+
+tenders,id,TEXT,PRIMARY KEY,Unique tender identifier,tender-it-001
+tenders,reference,TEXT,UNIQUE NOT NULL,Official tender reference,AO-IT-2024-001
+tenders,title,TEXT,NOT NULL,Tender title,Acquisition équipements informatiques
+tenders,description,TEXT,,Detailed tender description,Fourniture de 50 ordinateurs portables
+tenders,amount,TEXT,,Estimated tender value,850000
+tenders,direction,TEXT,NOT NULL,Organizational direction,DSI
+tenders,division,TEXT,,Organizational division,DSI
+tenders,currentPhase,INTEGER,DEFAULT 1,Current workflow phase (1-3),2
+tenders,currentStep,INTEGER,DEFAULT 1,Current workflow step (1-59),30
+tenders,currentActorId,TEXT,FOREIGN KEY,Current responsible actor,st1
+tenders,status,TEXT,DEFAULT 'active',Tender status (active/completed/cancelled),active
+tenders,createdById,TEXT,FOREIGN KEY NOT NULL,Tender creator user ID,st1
+tenders,createdAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Tender creation date,2024-01-15 09:00:00
+tenders,updatedAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Last update timestamp,2024-01-15 09:00:00
+tenders,deadline,TIMESTAMP,,Tender deadline date,2024-06-30 00:00:00
+
+tender_step_history,id,SERIAL,PRIMARY KEY,Auto-generated history ID,1
+tender_step_history,tenderId,TEXT,FOREIGN KEY NOT NULL,Associated tender ID,tender-it-001
+tender_step_history,stepNumber,INTEGER,NOT NULL,Workflow step number,1
+tender_step_history,phase,INTEGER,NOT NULL,Workflow phase,1
+tender_step_history,actorId,TEXT,FOREIGN KEY NOT NULL,Actor who performed step,st1
+tender_step_history,action,TEXT,NOT NULL,Action performed (completed/in_progress/pending),completed
+tender_step_history,comments,TEXT,,Step execution comments,Besoins identifiés: 50 ordinateurs
+tender_step_history,status,TEXT,DEFAULT 'pending',Step status,completed
+tender_step_history,completedAt,TIMESTAMP,,Step completion timestamp,2024-01-15 16:00:00
+tender_step_history,createdAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,History entry creation,2024-01-15 09:00:00
+
+tender_comments,id,SERIAL,PRIMARY KEY,Auto-generated comment ID,1
+tender_comments,tenderId,TEXT,FOREIGN KEY NOT NULL,Associated tender ID,tender-it-001
+tender_comments,authorId,TEXT,FOREIGN KEY NOT NULL,Comment author user ID,st1
+tender_comments,content,TEXT,NOT NULL,Comment content,Spécifications techniques finalisées
+tender_comments,isPublic,BOOLEAN,DEFAULT true,Public visibility flag,true
+tender_comments,createdAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Comment creation timestamp,2024-01-25 18:00:00
+
+tender_documents,id,SERIAL,PRIMARY KEY,Auto-generated document ID,1
+tender_documents,tenderId,TEXT,FOREIGN KEY NOT NULL,Associated tender ID,tender-it-001
+tender_documents,filename,TEXT,NOT NULL,System filename,dao_equipements_it_2024.pdf
+tender_documents,originalName,TEXT,NOT NULL,Original filename,DAO_Equipements_Informatiques_2024.pdf
+tender_documents,mimeType,TEXT,,File MIME type,application/pdf
+tender_documents,size,INTEGER,,File size in bytes,2048576
+tender_documents,uploadedBy,TEXT,FOREIGN KEY NOT NULL,Uploader user ID,st1
+tender_documents,uploadedAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Upload timestamp,2024-01-25 17:30:00
+
+contracts,id,TEXT,PRIMARY KEY,Unique contract identifier,cont-it-001
+contracts,reference,TEXT,UNIQUE NOT NULL,Official contract reference,CONT-IT-2024-001
+contracts,tenderId,TEXT,FOREIGN KEY NOT NULL,Associated tender ID,tender-it-001
+contracts,contractorName,TEXT,NOT NULL,Contractor company name,TechnoServices SARL
+contracts,contractorEmail,TEXT,,Contractor email,commercial@technoservices.ma
+contracts,contractorPhone,TEXT,,Contractor phone,+212 522 123 456
+contracts,amount,TEXT,NOT NULL,Contract value,850000
+contracts,startDate,TIMESTAMP,,Contract start date,2024-02-01 00:00:00
+contracts,endDate,TIMESTAMP,,Contract end date,2024-06-30 00:00:00
+contracts,status,TEXT,DEFAULT 'active',Contract status (active/completed/terminated),active
+contracts,signedAt,TIMESTAMP,,Contract signature timestamp,2024-01-30 16:00:00
+contracts,createdAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Contract creation,2024-01-30 16:00:00
+contracts,updatedAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Last update,2024-01-30 16:00:00
+
+invoices,id,TEXT,PRIMARY KEY,Unique invoice identifier,inv-it-001
+invoices,reference,TEXT,UNIQUE NOT NULL,Official invoice reference,FACT-IT-2024-001
+invoices,contractId,TEXT,FOREIGN KEY NOT NULL,Associated contract ID,cont-it-001
+invoices,amount,TEXT,NOT NULL,Invoice amount,425000
+invoices,dueDate,TIMESTAMP,,Payment due date,2024-03-15 00:00:00
+invoices,status,TEXT,DEFAULT 'pending',Invoice status (draft/pending/paid),paid
+invoices,issuedAt,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Invoice issue date,2024-02-15 09:00:00
+invoices,paidAt,TIMESTAMP,,Payment completion date,2024-03-10 14:30:00
+invoices,description,TEXT,,Invoice description,Première tranche - 50%
+
+orders,id,TEXT,PRIMARY KEY,Unique order identifier,ord-it-001
+orders,reference,TEXT,UNIQUE NOT NULL,Official order reference,CMD-IT-2024-001
+orders,contractId,TEXT,FOREIGN KEY NOT NULL,Associated contract ID,cont-it-001
+orders,description,TEXT,NOT NULL,Order description,Ordinateurs portables Dell Latitude 5540
+orders,quantity,INTEGER,DEFAULT 1,Ordered quantity,50
+orders,unitPrice,TEXT,,Unit price,8500
+orders,totalAmount,TEXT,,Total order amount,425000
+orders,orderDate,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Order placement date,2024-02-01 10:00:00
+orders,deliveryDate,TIMESTAMP,,Expected delivery date,2024-02-28 00:00:00
+orders,status,TEXT,DEFAULT 'pending',Order status (pending/confirmed/delivered),delivered
+
+receptions,id,TEXT,PRIMARY KEY,Unique reception identifier,rec-it-001
+receptions,reference,TEXT,UNIQUE NOT NULL,Official reception reference,REC-IT-2024-001
+receptions,contractId,TEXT,FOREIGN KEY NOT NULL,Associated contract ID,cont-it-001
+receptions,description,TEXT,NOT NULL,Reception description,Réception 25 ordinateurs portables
+receptions,receivedDate,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Reception date,2024-02-20 15:30:00
+receptions,quality,TEXT,DEFAULT 'satisfactory',Quality assessment (excellent/satisfactory/poor),excellent
+receptions,notes,TEXT,,Reception notes,Tous les ordinateurs conformes
+receptions,receivedBy,TEXT,,Receiving person,st1
+receptions,status,TEXT,DEFAULT 'received',Reception status,received
+
+payments,id,TEXT,PRIMARY KEY,Unique payment identifier,pay-it-001
+payments,reference,TEXT,UNIQUE NOT NULL,Official payment reference,PAY-IT-2024-001
+payments,invoiceId,TEXT,FOREIGN KEY NOT NULL,Associated invoice ID,inv-it-001
+payments,amount,TEXT,NOT NULL,Payment amount,425000
+payments,paymentDate,TIMESTAMP,DEFAULT CURRENT_TIMESTAMP,Payment execution date,2024-03-10 14:30:00
+payments,paymentMethod,TEXT,DEFAULT 'bank_transfer',Payment method,bank_transfer
+payments,status,TEXT,DEFAULT 'completed',Payment status (pending/completed/failed),completed
+payments,notes,TEXT,,Payment notes,Paiement première tranche équipements IT
+
+sessions,id,TEXT,PRIMARY KEY,Unique session identifier,sess_abc123
+sessions,sid,TEXT,UNIQUE NOT NULL,Session ID,connect.sid
+sessions,sess,JSON,NOT NULL,Session data,{"userId":"admin1"}
+sessions,expire,TIMESTAMP,NOT NULL,Session expiration,2024-12-31 23:59:59

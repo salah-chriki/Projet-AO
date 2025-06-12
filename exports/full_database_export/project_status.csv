@@ -1,0 +1,33 @@
+Tender_Reference,Title,Direction,Amount,Current_Phase,Current_Step,Status,Actor_Responsible,Progress_Percentage,Start_Date,Expected_Completion
+AO-IT-2024-001,Acquisition équipements informatiques DSI,DSI,850000,2,30,active,ST,51%,2024-01-15,2024-06-30
+AO-IT-2024-002,Mise à niveau infrastructure réseau,DSI,650000,1,15,active,CE,25%,2024-02-01,2024-08-31
+AO-INFRA-2024-001,Réfection des voiries communales,TRAVAUX_PUBLICS,2500000,3,45,active,ST,76%,2024-01-10,2024-12-31
+AO-INFRA-2024-002,Construction nouveau pont urbain,TRAVAUX_PUBLICS,4200000,2,32,active,SM,54%,2024-01-20,2025-06-30
+AO-SERV-2024-001,Formation personnel nouvelles technologies,RESSOURCES_HUMAINES,150000,3,48,active,SM,81%,2024-02-05,2024-08-31
+AO-SERV-2024-002,Maintenance préventive équipements,MAINTENANCE,320000,1,8,active,SM,14%,2024-02-10,2024-12-31
+AO-URBAN-2024-001,Équipement en mobilier urbain connecté,AMENAGEMENT,280000,3,59,completed,TP,100%,2024-01-05,2024-03-31
+AO-URBAN-2024-002,Éclairage public LED intelligent,AMENAGEMENT,480000,1,12,active,CE,20%,2024-02-15,2024-10-31
+AO-SEC-2024-001,Système vidéosurveillance urbaine,SECURITE,720000,2,28,active,SM,47%,2024-01-25,2024-09-30
+AO-SEC-2024-002,Sécurisation des bâtiments publics,SECURITE,195000,1,6,active,SM,10%,2024-02-20,2024-08-31
+
+Phase_Summary,Total_Tenders,Active_Tenders,Completed_Tenders,Average_Duration_Days,Success_Rate
+Phase 1 (Preparation),4,4,0,95,100%
+Phase 2 (Execution),4,4,0,45,100%
+Phase 3 (Payment),2,1,1,20,100%
+
+Direction_Summary,Total_Tenders,Total_Value,Active_Value,Completed_Value,Completion_Rate
+DSI,2,1500000,1500000,0,50%
+TRAVAUX_PUBLICS,2,6700000,6700000,0,65%
+RESSOURCES_HUMAINES,1,150000,150000,0,81%
+MAINTENANCE,1,320000,320000,0,14%
+AMENAGEMENT,2,760000,480000,280000,60%
+SECURITE,2,915000,915000,0,29%
+
+Actor_Workload,Assigned_Tenders,Pending_Steps,Completed_Steps,Average_Processing_Time_Days
+ST,4,6,12,3.2
+SM,5,8,15,2.8
+CE,3,4,8,2.5
+SB,2,2,6,1.8
+SOR,1,1,3,2.0
+TP,1,0,2,1.5
+ADMIN,1,1,2,2.0
