@@ -200,7 +200,7 @@ export default function Projects() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Division</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Sélectionner une division" />
@@ -245,7 +245,7 @@ export default function Projects() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Statut</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value || "active"}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Sélectionner un statut" />
@@ -316,7 +316,7 @@ export default function Projects() {
                 )}
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Calendar className="mr-2 h-4 w-4" />
-                  Créé le {new Date(project.createdAt).toLocaleDateString('fr-FR')}
+                  Créé le {project.createdAt ? new Date(project.createdAt).toLocaleDateString('fr-FR') : 'Date inconnue'}
                 </div>
               </div>
             </CardContent>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -26,6 +26,7 @@ const createTenderSchema = z.object({
   title: z.string().min(1, "Le titre est obligatoire"),
   description: z.string().min(1, "La description est obligatoire"),
   amount: z.string().min(1, "Le montant est obligatoire"),
+  projectId: z.string().optional(),
   direction: z.string().min(1, "La direction est obligatoire"),
   division: z.string().min(1, "La division est obligatoire"),
   deadline: z.string().min(1, "L'échéance est obligatoire"),
@@ -42,6 +43,11 @@ export default function CreateTender() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [documents, setDocuments] = useState<DocumentFile[]>([]);
+
+  // Fetch projects for selection
+  const { data: projects } = useQuery({
+    queryKey: ["/api/projects"],
+  });
 
   const form = useForm<CreateTenderFormData>({
     resolver: zodResolver(createTenderSchema),
