@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupSimpleAuth, isAuthenticated, isAdmin, isDivisionAdmin, isAdminOrDivisionAdmin } from "./simpleAuth";
 import bcrypt from "bcrypt";
 import { 
+  insertProjectSchema,
   insertTenderSchema, 
   insertTenderCommentSchema, 
   insertTenderStepHistorySchema, 
@@ -194,6 +195,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching tender:", error);
       res.status(500).json({ message: "Failed to fetch tender" });
+    }
+  });
+
+  // Project routes
+  app.get('/api/projects', isAuthenticated, async (req: any, res) => {
+    try {
+      const projects = await storage.getAllProjects();
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      res.status(500).json({ message: "Failed to fetch projects" });
+    }
+  });
+
+  app.post('/api/projects', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const projectData = insertProjectSchema.parse({
+        ...req.body,
+        createdById: userId
+      });
+
+      const project = await storage.createProject(projectData);
+      res.status(201).json(project);
+    } catch (error) {
+      console.error("Error creating project:", error);
+      res.status(500).json({ message: "Failed to create project" });
+    }
+  });
+
+  app.get('/api/projects/:id', isAuthenticated, async (req, res) => {
+    try {
+      const project = await storage.getProject(req.params.id);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      res.json(project);
+    } catch (error) {
+      console.error("Error fetching project:", error);
+      res.status(500).json({ message: "Failed to fetch project" });
+    }
+  });
+
+  app.put('/api/projects/:id', isAuthenticated, async (req, res) => {
+    try {
+      const updatedProject = await storage.updateProject(req.params.id, req.body);
+      res.json(updatedProject);
+    } catch (error) {
+      console.error("Error updating project:", error);
+      res.status(500).json({ message: "Failed to update project" });
+    }
+  });
+
+  app.delete('/api/projects/:id', isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteProject(req.params.id);
+      res.json({ message: "Project deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      res.status(500).json({ message: "Failed to delete project" });
     }
   });
 

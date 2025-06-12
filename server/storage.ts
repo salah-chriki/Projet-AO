@@ -1,5 +1,6 @@
 import {
   users,
+  projects,
   tenders,
   workflowSteps,
   tenderStepHistory,
@@ -13,6 +14,8 @@ import {
   type User,
   type InsertUser,
   type UpsertUser,
+  type Project,
+  type InsertProject,
   type Tender,
   type WorkflowStep,
   type TenderStepHistory,
@@ -50,6 +53,14 @@ export interface IStorage {
   deleteUser(userId: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
   getUserActivityCount(userId: string): Promise<number>;
+
+  // Project operations
+  createProject(project: InsertProject): Promise<Project>;
+  getProject(id: string): Promise<Project | undefined>;
+  getAllProjects(): Promise<Project[]>;
+  getProjectsByDirection(direction: string): Promise<Project[]>;
+  updateProject(projectId: string, updates: Partial<Project>): Promise<Project>;
+  deleteProject(projectId: string): Promise<void>;
 
   // Tender operations
   createTender(tender: InsertTender): Promise<Tender>;
@@ -242,6 +253,41 @@ export class DatabaseStorage implements IStorage {
       .where(eq(tenders.createdById, userId));
     
     return (historyResult?.count || 0) + (tenderResult?.count || 0) + (createdResult?.count || 0);
+  }
+
+  // Project operations
+  async createProject(project: InsertProject): Promise<Project> {
+    const [newProject] = await db
+      .insert(projects)
+      .values(project)
+      .returning();
+    return newProject;
+  }
+
+  async getProject(id: string): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project;
+  }
+
+  async getAllProjects(): Promise<Project[]> {
+    return await db.select().from(projects).orderBy(desc(projects.createdAt));
+  }
+
+  async getProjectsByDirection(direction: string): Promise<Project[]> {
+    return await db.select().from(projects).where(eq(projects.direction, direction)).orderBy(desc(projects.createdAt));
+  }
+
+  async updateProject(projectId: string, updates: Partial<Project>): Promise<Project> {
+    const [updatedProject] = await db
+      .update(projects)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(projects.id, projectId))
+      .returning();
+    return updatedProject;
+  }
+
+  async deleteProject(projectId: string): Promise<void> {
+    await db.delete(projects).where(eq(projects.id, projectId));
   }
 
   // Tender operations
