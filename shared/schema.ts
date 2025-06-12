@@ -44,6 +44,23 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Projects table
+export const projects = pgTable("projects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  status: varchar("status").default("active"), // active, completed, on_hold, cancelled
+  budget: decimal("budget", { precision: 15, scale: 2 }),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  direction: varchar("direction"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
+  division: varchar("division"), // DSI, DRHS, DF, DCSP, DSA, DPV, etc.
+  managerId: varchar("manager_id").references(() => users.id),
+  createdById: varchar("created_by_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Tender main table
 export const tenders = pgTable("tenders", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -52,6 +69,7 @@ export const tenders = pgTable("tenders", {
   description: text("description"),
   amount: decimal("amount", { precision: 15, scale: 2 }),
   prestataire: text("prestataire"), // Contractor/Service provider name
+  projectId: uuid("project_id").references(() => projects.id), // Link to project
   direction: varchar("direction"), // DAF, DPPAV, DCPA, DIL, DERAJ, DCC, DCGAI
   division: varchar("division"), // DSI, DRHS, DF, DCSP, DSA, DPV, etc.
   currentPhase: integer("current_phase").default(1), // 1=Preparation, 2=Execution, 3=Payment
@@ -182,12 +200,28 @@ export const payments = pgTable("payments", {
 export const usersRelations = relations(users, ({ many }) => ({
   createdTenders: many(tenders, { relationName: "created_by" }),
   assignedTenders: many(tenders, { relationName: "current_actor" }),
+  createdProjects: many(projects, { relationName: "created_by" }),
+  managedProjects: many(projects, { relationName: "manager" }),
   stepHistory: many(tenderStepHistory),
   comments: many(tenderComments),
   contracts: many(contracts),
   issuedOrders: many(orders),
   receptions: many(receptions),
   processedPayments: many(payments),
+}));
+
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+  createdBy: one(users, {
+    fields: [projects.createdById],
+    references: [users.id],
+    relationName: "created_by",
+  }),
+  manager: one(users, {
+    fields: [projects.managerId],
+    references: [users.id],
+    relationName: "manager",
+  }),
+  tenders: many(tenders),
 }));
 
 export const tendersRelations = relations(tenders, ({ one, many }) => ({
@@ -200,6 +234,10 @@ export const tendersRelations = relations(tenders, ({ one, many }) => ({
     fields: [tenders.currentActorId],
     references: [users.id],
     relationName: "current_actor",
+  }),
+  project: one(projects, {
+    fields: [tenders.projectId],
+    references: [projects.id],
   }),
   stepHistory: many(tenderStepHistory),
   comments: many(tenderComments),
@@ -304,6 +342,12 @@ export const paymentsRelations = relations(payments, ({ one }) => ({
 }));
 
 // Insert schemas
+export const insertProjectSchema = createInsertSchema(projects).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertTenderSchema = createInsertSchema(tenders).omit({
   id: true,
   createdAt: true,
@@ -375,6 +419,7 @@ export const upsertUserSchema = createInsertSchema(users).pick({
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type Project = typeof projects.$inferSelect;
 export type Tender = typeof tenders.$inferSelect;
 export type WorkflowStep = typeof workflowSteps.$inferSelect;
 export type TenderStepHistory = typeof tenderStepHistory.$inferSelect;
@@ -385,6 +430,7 @@ export type Invoice = typeof invoices.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type Reception = typeof receptions.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
+export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type InsertTender = z.infer<typeof insertTenderSchema>;
 export type InsertWorkflowStep = z.infer<typeof insertWorkflowStepSchema>;
 export type InsertTenderStepHistory = z.infer<typeof insertTenderStepHistorySchema>;

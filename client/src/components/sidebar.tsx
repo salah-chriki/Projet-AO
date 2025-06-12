@@ -197,8 +197,8 @@ export default function Sidebar() {
               const isActive = location === item.href;
               return (
                 <Link key={item.href} href={item.href}>
-                  <a
-                    className={`flex items-center px-6 py-3 text-sm font-medium transition-colors ${
+                  <div
+                    className={`flex items-center px-6 py-3 text-sm font-medium transition-colors cursor-pointer ${
                       isActive
                         ? "text-blue-700 bg-blue-50 border-r-2 border-blue-700" 
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
@@ -206,7 +206,7 @@ export default function Sidebar() {
                   >
                     <item.icon className="w-5 h-5 mr-3" />
                     {item.name} {!user.isAdmin && `(${user.role})`}
-                  </a>
+                  </div>
                 </Link>
               );
             })}
