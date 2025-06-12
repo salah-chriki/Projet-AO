@@ -1,0 +1,36 @@
+Direction,Contract_Count,Total_Contract_Value,Invoice_Count,Total_Invoice_Value,Payment_Count,Total_Paid_Amount,Pending_Amount,Status
+DSI,2,1500000,3,637500,1,425000,212500,Active
+TRAVAUX_PUBLICS,2,6700000,3,2500000,1,1250000,1250000,Active
+AMENAGEMENT,2,760000,2,280000,2,280000,0,Completed
+RESSOURCES_HUMAINES,1,150000,2,150000,1,75000,75000,Active
+SECURITE,2,915000,2,720000,1,360000,360000,Active
+MAINTENANCE,1,320000,0,0,0,0,0,Active
+
+Contract_Reference,Contractor_Name,Amount,Status,Start_Date,End_Date,Invoices_Issued,Amount_Invoiced,Amount_Paid,Completion_Rate
+CONT-IT-2024-001,TechnoServices SARL,850000,active,2024-02-01,2024-06-30,2,637500,425000,50%
+CONT-INFRA-2024-001,BTP Maroc Travaux SA,2500000,active,2024-03-01,2024-12-31,1,1250000,0,30%
+CONT-URBAN-2024-001,Smart City Solutions,280000,completed,2024-02-15,2024-03-31,2,280000,280000,100%
+CONT-SERV-2024-001,FormaPro Consulting,150000,active,2024-03-01,2024-08-31,1,75000,0,25%
+CONT-SEC-2024-001,SecureTech Systems,720000,active,2024-03-15,2024-09-30,1,360000,0,40%
+
+Invoice_Reference,Contract_Reference,Amount,Status,Issue_Date,Due_Date,Payment_Date,Description
+FACT-IT-2024-001,CONT-IT-2024-001,425000,paid,2024-02-15,2024-03-15,2024-03-10,Première tranche - 50% ordinateurs et imprimantes
+FACT-IT-2024-002,CONT-IT-2024-001,212500,pending,2024-03-20,2024-04-30,,Deuxième tranche - 25% équipements
+FACT-IT-2024-003,CONT-IT-2024-001,212500,draft,,,,"Tranche finale - 25% serveurs et licences"
+FACT-INFRA-2024-001,CONT-INFRA-2024-001,1250000,pending,2024-03-25,2024-04-30,,Première tranche travaux - 50%
+FACT-INFRA-2024-002,CONT-INFRA-2024-001,750000,draft,,,,"Deuxième tranche - 30%"
+FACT-INFRA-2024-003,CONT-INFRA-2024-001,500000,draft,,,,"Tranche finale - 20%"
+FACT-URBAN-2024-001,CONT-URBAN-2024-001,140000,paid,2024-02-20,2024-03-15,2024-03-10,Première tranche mobilier urbain - 50%
+FACT-URBAN-2024-002,CONT-URBAN-2024-001,140000,paid,2024-03-15,2024-03-31,2024-03-25,Tranche finale mobilier urbain - 50%
+FACT-SERV-2024-001,CONT-SERV-2024-001,75000,pending,2024-03-10,2024-04-15,,Formation Phase 1 - 50%
+FACT-SERV-2024-002,CONT-SERV-2024-001,75000,draft,,,,"Formation Phase 2 - 50%"
+FACT-SEC-2024-001,CONT-SEC-2024-001,360000,pending,2024-04-01,2024-05-15,,Installation Phase 1 - 50%
+FACT-SEC-2024-002,CONT-SEC-2024-001,360000,draft,,,,"Installation Phase 2 - 50%"
+
+Payment_Reference,Invoice_Reference,Amount,Payment_Date,Payment_Method,Status,Notes
+PAY-IT-2024-001,FACT-IT-2024-001,425000,2024-03-10,bank_transfer,completed,Paiement première tranche équipements IT
+PAY-INFRA-2024-001,FACT-INFRA-2024-001,1250000,2024-04-15,bank_transfer,pending,En attente validation finale SOR
+PAY-URBAN-2024-001,FACT-URBAN-2024-001,140000,2024-03-10,bank_transfer,completed,Paiement première tranche mobilier urbain
+PAY-URBAN-2024-002,FACT-URBAN-2024-002,140000,2024-03-25,bank_transfer,completed,Paiement final mobilier urbain connecté
+PAY-SERV-2024-001,FACT-SERV-2024-001,75000,2024-04-20,bank_transfer,pending,Formation Phase 1 terminée avec succès
+PAY-SEC-2024-001,FACT-SEC-2024-001,360000,2024-06-20,bank_transfer,pending,En attente réception définitive centre contrôle

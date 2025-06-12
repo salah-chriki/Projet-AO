@@ -1,0 +1,60 @@
+Step,Phase,Actor,Title,Description,Duration_Days,Dependencies,Deliverables
+1,1,ST,Évaluation des besoins,Analyser et identifier les besoins techniques et fonctionnels,2,,Rapport d'évaluation des besoins
+2,1,ST,Consultation utilisateurs,Consulter les parties prenantes et utilisateurs finaux,3,1,Compte-rendu de consultation
+3,1,ST,Spécifications techniques,Élaborer le cahier des charges technique (DAO),5,2,Cahier des charges technique
+4,1,ST,Préparation documents,Préparer les annexes techniques et plans,2,3,Annexes techniques
+5,1,ST,Transmission vers SM,Transmettre les spécifications complètes vers Service Marchés,1,4,Dossier technique complet
+6,1,SM,Documents administratifs,Préparer les pièces administratives du marché,2,5,Pièces administratives
+7,1,SM,Clauses spéciales,Rédiger le Cahier des Prescriptions Spéciales (CPS),3,6,CPS finalisé
+8,1,SM,Clauses générales,Inclure le Cahier des Clauses Administratives Générales,1,7,CCAG intégré
+9,1,SM,Estimation budgétaire,Déterminer le budget estimé du marché,2,8,Estimation financière
+10,1,SM,Méthode d'achat,Choisir la méthode de passation appropriée,1,9,Méthode de passation définie
+11,1,CE,Contrôle réglementaire,Examiner la conformité réglementaire du dossier,3,10,Rapport de conformité
+12,1,CE,Vérification budgétaire,Vérifier l'adéquation budgétaire et légale,2,11,Validation budgétaire
+13,1,CE,Alignement technique,Revoir l'alignement des spécifications techniques,2,12,Validation technique
+14,1,CE,Recommandations,Formuler des recommandations d'amélioration,1,13,Rapport de recommandations
+15,1,CE,Décision validation,Approuver le dossier ou demander des modifications,1,14,Décision de validation
+16,1,SB,Vérification disponibilité,Vérifier la disponibilité des crédits budgétaires,2,15,Confirmation budgétaire
+17,1,SB,Engagement crédits,Engager les crédits budgétaires nécessaires,2,16,Engagement budgétaire
+18,1,SB,Validation financière,Valider le cadre financier du marché,1,17,Validation financière
+19,1,SB,Notification engagement,Notifier l'engagement budgétaire aux services,1,18,Notification d'engagement
+20,1,SB,Retour vers SM,Transmettre le dossier validé vers Service Marchés,1,19,Dossier validé transmis
+21,1,SM,Publication portail,Publier l'avis sur le portail marchespublics.gov.ma,1,20,Avis publié en ligne
+22,1,SM,Publication légale,Publication dans les journaux d'annonces légales,2,21,Publication légale effectuée
+23,1,SM,Distribution documents,Mettre les documents du marché à disposition,1,22,Documents accessibles
+24,2,SM,Réception des offres,Recevoir les plis des soumissionnaires,1,23,Offres reçues
+25,2,SM,Organisation commission,Organiser la séance d'ouverture publique,1,24,Commission organisée
+26,2,SM,Coordination commission,Coordonner la commission d'évaluation des marchés,1,25,Commission coordonnée
+27,2,SM,Ouverture séquentielle,Ouverture: administratif → technique → financier,2,26,Offres ouvertes
+28,2,SM,Vérification documents,Vérifier la présence des documents requis,1,27,Documents vérifiés
+29,2,SM,Contrôle éligibilité,Vérifier l'éligibilité des soumissionnaires,3,28,Éligibilité contrôlée
+30,2,ST,Évaluation technique,Évaluer la conformité technique des propositions,5,29,Rapport d'évaluation technique
+31,2,CE,Validation conformité,Valider la conformité technique et légale,2,30,Conformité validée
+32,2,SM,Analyse comparative,Analyser et comparer les offres reçues,3,31,Analyse comparative
+33,2,SM,Classement,Établir le classement des soumissionnaires,2,32,Classement établi
+34,2,SM,PV délibération,Élaborer le procès-verbal de délibération,2,33,PV de délibération
+35,2,CE,Validation attribution,Valider l'attribution du marché,2,34,Attribution validée
+36,2,SB,Vérification finale,Vérification budgétaire finale avant attribution,1,35,Vérification finale
+37,2,ADMIN,Approbation,Approbation officielle du marché par l'autorité,2,36,Approbation officielle
+38,2,SM,Signature,Signature officielle du contrat de marché,1,37,Contrat signé
+39,2,SM,Notification,Notification officielle au titulaire du marché,1,38,Notification envoyée
+40,2,SM,Caution définitive,Réception de la caution définitive du titulaire,2,39,Caution reçue
+41,2,SM,Ordre de service,Émission de l'ordre de service de commencement,1,40,Ordre de service émis
+42,2,ST,Démarrage,Démarrage effectif des prestations contractuelles,1,41,Prestations démarrées
+43,3,ST,Commission réception,Constituer la commission de réception,1,42,Commission constituée
+44,3,ST,Vérification conformité,Vérifier la conformité des livraisons/prestations,3,43,Conformité vérifiée
+45,3,ST,Tests équipements,Tester la fonctionnalité des équipements livrés,2,44,Tests validés
+46,3,ST,PV réception,Établir le procès-verbal de réception,1,45,PV de réception
+47,3,ST,Transmission SM,Transmettre le PV de réception vers Service Marchés,1,46,PV transmis
+48,3,SM,Certification factures,Certifier la conformité des factures reçues,1,47,Factures certifiées
+49,3,SM,Dossier paiement,Constituer le dossier complet de paiement,2,48,Dossier de paiement
+50,3,SM,Vérification administrative,Vérifier administrativement le dossier,1,49,Vérification administrative
+51,3,SM,Calcul montants,Calculer les montants exacts à payer,1,50,Montants calculés
+52,3,SM,Transmission SOR,Transmettre le dossier vers Service Ordonnancement,1,51,Dossier transmis SOR
+53,3,SOR,Vérification dossier,Vérifier la complétude du dossier de paiement,2,52,Dossier vérifié
+54,3,SOR,Contrôle pièces,Contrôler toutes les pièces justificatives,1,53,Pièces contrôlées
+55,3,SOR,Ordre paiement,Établir l'ordre de paiement définitif,1,54,Ordre de paiement
+56,3,SOR,Transmission TP,Transmettre l'ordre vers Trésorier Payeur,1,55,Ordre transmis TP
+57,3,TP,Contrôle final,Effectuer le contrôle final des paiements,2,56,Contrôle final effectué
+58,3,TP,Validation ordres,Valider définitivement les ordres de paiement,1,57,Ordres validés
+59,3,TP,Décaissement,Procéder au décaissement effectif des fonds,1,58,Paiement effectué
