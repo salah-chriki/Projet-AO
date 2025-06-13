@@ -99,6 +99,8 @@ export default function Projects() {
       budget: "",
       direction: "",
       division: "",
+      startDate: "",
+      endDate: "",
     },
   });
 
