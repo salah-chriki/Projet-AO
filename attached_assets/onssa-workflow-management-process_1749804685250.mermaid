@@ -1,0 +1,81 @@
+flowchart TD
+    %% Main Process Phases
+    subgraph "1. Tender Initiation"
+        A1["ST: Create DAO"]-->A2["SM: Receive DAO"]
+    end
+    
+    subgraph "2. Tender Review"
+        B1["SM: Forward DAO to CE"]-->B2["CE: Review DAO"]
+        B2-->B3{"Remarks?"}
+        B3-->|Yes|B4["CE: Log remarks"]
+        B4-->B5["SM: Update DAO"]-->B2
+        B3-->|No|B6["CE: Validate DAO"]
+        B6-->B7["SM: Submit to Commission"]
+    end
+    
+    subgraph "3. Contract Award"
+        C1["SM: Transmit to Commission"]-->C2["Commission: Manage bidding"]
+        C2-->C3["Commission: Select Prestataire"]
+        C3-->C4["SM: Draft contract"]
+        C4-->C5["Direction: Sign contract"]
+        C5-->C6["SM: Inform Prestataire"]
+    end
+    
+    subgraph "4. Contract Engagement"
+        D1["SM: Transmit to Prestataire"]-->D2["Prestataire: Approve contract"]
+        D2-->D3["SB: Engage contract"]
+    end
+    
+    subgraph "5. Payment Dossier"
+        E1["SM: Prepare payment dossier"]-->E2["SM: Transmit to SOR"]
+        E2-->E3["SOR: Review dossier"]
+        E3-->E4{"Remarks?"}
+        E4-->|Yes|E5["SOR: Log remarks"]
+        E5-->E6["SM: Update dossier"]-->E3
+        E4-->|No|E7["SOR: Establish OP/OV"]
+    end
+    
+    subgraph "6. Payment Validation"
+        F1["SOR: Transmit OP/OV to TP"]-->F2["TP: Review OP/OV"]
+        F2-->F3{"Remarks?"}
+        F3-->|Yes|F4["TP: Log remarks"]
+        F4-->F5["SM: Update via SOR"]-->F2
+        F3-->|No|F6["TP: Validate and sign"]
+        F6-->F7["SM: Add ordonnateur signature"]
+    end
+    
+    subgraph "7. Execution Notification"
+        G1["SM: Notify ST of OS activation"]-->G2["ST: Monitor project kickoff"]
+    end
+    
+    subgraph "8. Service Management"
+        H1["ST: Request suspension/resume"]-->H2["SM: Transmit to Prestataire"]
+    end
+    
+    subgraph "9. Service Reception"
+        I1["SM: Designate reception commission"]-->I2["SM: Log deliverables"]
+        I2-->I3["ST: Review deliverables"]
+        I3-->I4{"Remarks?"}
+        I4-->|Yes|I5["ST: Log remarks"]
+        I5-->I6["Prestataire: Address remarks"]-->I3
+        I4-->|No|I7["ST: Finalize reception"]
+    end
+    
+    subgraph "10. Invoicing"
+        J1["Prestataire: Submit invoice"]-->J2["ST: Certify invoice"]
+        J2-->J3["ST: Establish note de calcul"]
+        J3-->J4["SM: Notify Prestataire"]
+        J4-->J5["SM: Receive definitive deposit"]
+        J5-->J6["SB: Confirm financial closure"]
+    end
+    
+    %% Connect the phases
+    A2-->B1
+    B7-->C1
+    C6-->D1
+    D3-->E1
+    E7-->F1
+    F7-->G1
+    G2-->H1
+    H2-->I1
+    I7-->J1
