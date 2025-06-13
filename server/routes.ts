@@ -56,6 +56,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const { initializeRealWorkflowSteps } = await import("./realWorkflowSteps");
     await initializeRealWorkflowSteps();
     
+    // Initialize ONSSA workflow
+    const { initializeONSSAWorkflow } = await import("./onssaWorkflow");
+    await initializeONSSAWorkflow();
+    
     // Create Phase 1 Step 1 tenders for all directions
     const { createPhase1Step1Tenders } = await import("./newTenderData");
     await createPhase1Step1Tenders();
@@ -1222,6 +1226,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating IT equipment tender:", error);
       res.status(500).json({ message: "Failed to create IT equipment tender" });
+    }
+  });
+
+  // Create ONSSA workflow tender endpoint
+  app.post('/api/create-onssa-tender', isAuthenticated, async (req, res) => {
+    try {
+      const { createONSSATender } = await import("./onssaWorkflow");
+      const onssaTender = await createONSSATender();
+      res.json({ 
+        message: "ONSSA workflow tender created successfully",
+        tender: onssaTender
+      });
+    } catch (error) {
+      console.error("Error creating ONSSA tender:", error);
+      res.status(500).json({ message: "Failed to create ONSSA tender" });
+    }
+  });
+
+  // ONSSA workflow progression endpoint
+  app.post('/api/onssa/progress/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const { progressONSSAWorkflow } = await import("./onssaWorkflow");
+      const { currentStep, action, comments } = req.body;
+      
+      await progressONSSAWorkflow(req.params.id, currentStep, action, comments);
+      
+      res.json({ message: `ONSSA workflow step ${currentStep} ${action}ed successfully` });
+    } catch (error) {
+      console.error("Error progressing ONSSA workflow:", error);
+      res.status(500).json({ message: "Failed to progress ONSSA workflow" });
     }
   });
 

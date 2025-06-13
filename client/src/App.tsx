@@ -25,6 +25,7 @@ import WorkflowDashboard from "@/pages/workflow-dashboard";
 import ITWorkflowDemo from "@/pages/it-workflow-demo";
 import DataExport from "@/pages/data-export";
 import Sidebar from "@/components/sidebar";
+import ONSSAWorkflow from "./pages/onssa-workflow";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -42,7 +43,7 @@ function Router() {
       {!isAuthenticated ? (
         <>
           <Route path="/login" component={Login} />
-          <Route path="*">{() => <Login />}</Route>
+          <Route path="*">{() => <Login />} />
         </>
       ) : (
         <>
@@ -227,6 +228,16 @@ function Router() {
                 <Sidebar />
                 <div className="flex-1 overflow-hidden">
                   <ITWorkflowDemo />
+                </div>
+              </div>
+            )}
+          </Route>
+          <Route path="/onssa-workflow">
+            {() => (
+              <div className="flex h-screen bg-slate-50">
+                <Sidebar />
+                <div className="flex-1 overflow-hidden">
+                  <ONSSAWorkflow />
                 </div>
               </div>
             )}

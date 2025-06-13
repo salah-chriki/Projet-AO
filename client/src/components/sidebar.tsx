@@ -17,6 +17,7 @@ import {
   GitBranch,
   Monitor,
   FolderOpen,
+  FileCheck
 } from "lucide-react";
 
 const navigationItems = [
@@ -60,6 +61,12 @@ const navigationItems = [
     name: "Projets",
     href: "/projects",
     icon: FolderOpen,
+    adminOnly: true,
+  },
+  {
+    name: "Workflow ONSSA",
+    href: "/onssa-workflow",
+    icon: FileCheck,
     adminOnly: true,
   },
 ];
@@ -137,7 +144,7 @@ export default function Sidebar() {
           {user.isAdmin ? "Administrateur" : user.role}
         </p>
       </div>
-      
+
       <nav className="mt-6 flex-1 flex flex-col">
         <div className="flex-1">
           {user?.isAdmin && (
@@ -193,7 +200,7 @@ export default function Sidebar() {
               </div>
             </>
           )}
-          
+
           <div className="px-6 mt-8">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Mon compte
@@ -219,7 +226,7 @@ export default function Sidebar() {
             })}
           </div>
         </div>
-        
+
         {/* Bouton de déconnexion en bas */}
         <div className="border-t border-slate-200 p-4">
           <button
